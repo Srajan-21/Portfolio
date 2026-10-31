@@ -2,26 +2,32 @@
 
 import React, { useState } from "react";
 import { useCollector } from "@/context/CollectorContext";
-import { Compass, ExternalLink, Plus, Trash2 } from "lucide-react";
+import { Compass, ExternalLink, Plus, Trash2, CheckCircle2, ChevronRight, Layers, Database, ShieldCheck } from "lucide-react";
+import { LineMaskReveal } from "@/components/motion/LineMaskReveal";
+import { GoldMedallion } from "@/components/seals/GoldMedallion";
 
 interface Stop {
   id: string;
   name: string;
   duration: string;
   cost: number;
+  highlight: string;
 }
 
 export function Level3FirstBuild() {
-  const { unlockSeal } = useCollector();
+  const { unlockSeal, sealsEarned, setCursorLabel } = useCollector();
 
-  // Neutral curated itinerary stops (no invented specific vendor names)
-  const availableStops: Stop[] = [
-    { id: "s1", name: "Curated Heritage Trail", duration: "1.5h", cost: 500 },
-    { id: "s2", name: "Local Culinary Exploration", duration: "1.0h", cost: 650 },
-    { id: "s3", name: "Historic District Sunset Walk", duration: "2.0h", cost: 800 },
+  // Neutral curated itinerary stops
+  const catalogStops: Stop[] = [
+    { id: "s1", name: "Old Quarter Heritage Walk", duration: "1.5h", cost: 500, highlight: "Hidden courtyards & historical architecture" },
+    { id: "s2", name: "Artisan Silk & Spice Trail", duration: "1.0h", cost: 650, highlight: "Direct trade workshops & local masters" },
+    { id: "s3", name: "Monograph Sunset Point", duration: "2.0h", cost: 800, highlight: "Panoramic skyline & tea tasting" },
+    { id: "s4", name: "Culinary Origins Tasting", duration: "1.5h", cost: 750, highlight: "Centuries-old recipes & street kitchens" },
   ];
 
-  const [itinerary, setItinerary] = useState<Stop[]>([availableStops[0]]);
+  const [itinerary, setItinerary] = useState<Stop[]>([catalogStops[0]]);
+
+  const hasSeal = sealsEarned.includes("seal_tourphin");
 
   const addStop = (stop: Stop) => {
     if (itinerary.some((s) => s.id === stop.id)) return;
@@ -38,27 +44,29 @@ export function Level3FirstBuild() {
   return (
     <section
       id="chapter-3"
-      className="relative min-h-screen w-full border-b-hairline bg-[#FAF7F2] py-20 px-6 sm:px-12 md:py-28"
+      className="relative min-h-screen w-full border-b border-[#6F665A]/20 bg-[#FAF7F2] py-20 px-6 sm:px-12 md:py-28 lg:px-20"
     >
-      <div className="mx-auto max-w-5xl">
-        {/* Chapter Header */}
-        <div className="mb-12 flex flex-wrap items-baseline justify-between border-b-hairline pb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F665A]">
+      <div className="mx-auto max-w-6xl">
+        {/* CHAPTER FOLIO HEADER */}
+        <div className="mb-12 flex flex-wrap items-baseline justify-between border-b border-[#6F665A]/20 pb-4 font-mono text-[10px] uppercase tracking-[0.22em] text-[#6F665A]">
           <div className="flex items-center gap-2">
-            <span className="text-[#8C6B3A] font-semibold">CHAPTER III</span>
-            <span>&bull;</span>
+            <span className="font-semibold text-[#8C6B3A]">CHAPTER III</span>
+            <span className="text-[#6F665A]/40">&bull;</span>
             <span>FIRST ARCHITECTURAL BUILD // 2023 &ndash; 2024</span>
           </div>
-          <span>SMART INDIA HACKATHON &bull; TOURPHIN</span>
+          <span>SMART INDIA HACKATHON (SIH) &bull; TOURPHIN</span>
         </div>
 
-        {/* Chapter Title */}
+        {/* CHAPTER TITLE & DEMO ACTION */}
         <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-          <div>
-            <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#14110F]">
-              Tourphin <span className="italic font-serif text-[#6B1E1E]">Travel Platform</span>
-            </h2>
-            <p className="mt-4 max-w-2xl font-serif text-lg font-light text-[#6F665A] leading-relaxed">
-              Connecting travelers directly with local guides who possess authentic neighborhood knowledge &mdash; backed by PostgreSQL normalization, transactional webhooks, and AWS CloudFront.
+          <div className="max-w-3xl">
+            <LineMaskReveal threshold={0.1}>
+              <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#14110F]">
+                Tourphin <span className="italic font-serif text-[#6B1E1E]">Travel Platform</span>
+              </h2>
+            </LineMaskReveal>
+            <p className="mt-4 font-serif text-lg font-light text-[#6F665A] leading-relaxed">
+              Conceived for the Smart India Hackathon. The platform links travelers directly to verified neighborhood guides who create bespoke itineraries &mdash; built upon PostgreSQL normalization, role-based controls, and razor-sharp webhook reconciliation.
             </p>
           </div>
 
@@ -66,17 +74,19 @@ export function Level3FirstBuild() {
             href="https://tourphin-eight.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded border border-[#6F665A]/30 bg-[#EDE5D3]/60 px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] hover:bg-[#EDE5D3] transition-colors shrink-0"
+            onMouseEnter={() => setCursorLabel("DEMO")}
+            onMouseLeave={() => setCursorLabel(null)}
+            className="group flex items-center gap-2.5 rounded border border-[#6F665A]/30 bg-[#EDE5D3]/70 px-6 py-3 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] hover:bg-[#EDE5D3] transition-all shadow-sm shrink-0"
           >
-            <Compass className="h-3.5 w-3.5 text-[#B08D57]" />
-            <span>Visit Live Demo</span>
-            <ExternalLink className="h-3 w-3 text-[#6F665A]" />
+            <Compass className="h-4 w-4 text-[#B08D57]" />
+            <span className="font-semibold">Visit Live Demo</span>
+            <ExternalLink className="h-3 w-3 text-[#6F665A] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </div>
 
-        {/* 4 Resume Metric Cards */}
-        <div className="mb-12 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <div className="rounded border-hairline bg-[#F6F1E7] p-6 text-center shadow-editorial">
+        {/* 4 VERIFIED ENGINEERING SPECIFICATION PLATES */}
+        <div className="mb-14 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="rounded border border-[#6F665A]/20 bg-[#F6F1E7] p-6 text-center shadow-sm">
             <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6F665A]">
               QUERY EFFICIENCY
             </span>
@@ -84,13 +94,13 @@ export function Level3FirstBuild() {
               ~35%
             </div>
             <span className="font-mono text-[10px] text-[#6F665A]">
-              Index &amp; Normalization Gain
+              Index &amp; 3NF Normalization
             </span>
           </div>
 
-          <div className="rounded border-hairline bg-[#F6F1E7] p-6 text-center shadow-editorial">
+          <div className="rounded border border-[#6F665A]/20 bg-[#F6F1E7] p-6 text-center shadow-sm">
             <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6F665A]">
-              DATABASE SCALE
+              SCHEMA SCALE
             </span>
             <div className="my-2 font-display text-4xl font-light text-[#14110F]">
               10,000+
@@ -100,140 +110,205 @@ export function Level3FirstBuild() {
             </span>
           </div>
 
-          <div className="rounded border-hairline bg-[#F6F1E7] p-6 text-center shadow-editorial">
+          <div className="rounded border border-[#6F665A]/20 bg-[#F6F1E7] p-6 text-center shadow-sm">
             <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6F665A]">
-              PAYMENT VERIFICATION
+              WEBHOOK RECONCILIATION
             </span>
             <div className="my-2 font-display text-4xl font-light text-[#8C6B3A]">
               99%
             </div>
             <span className="font-mono text-[10px] text-[#6F665A]">
-              500+ Monthly Razorpay Txns
+              Success Across 500+ Mo. Txns
             </span>
           </div>
 
-          <div className="rounded border-hairline bg-[#F6F1E7] p-6 text-center shadow-editorial">
+          <div className="rounded border border-[#6F665A]/20 bg-[#F6F1E7] p-6 text-center shadow-sm">
             <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6F665A]">
-              FAILURE REDUCTION
+              TRANSACTIONAL SAFETY
             </span>
             <div className="my-2 font-display text-4xl font-light text-[#6B1E1E]">
-              25%
+              &minus;25%
             </div>
             <span className="font-mono text-[10px] text-[#6F665A]">
-              Transactional Check Guards
+              Booking Failure Reduction
             </span>
           </div>
         </div>
 
-        {/* Two-Column Layout */}
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
-          {/* Left Column: Architectural Dossier */}
-          <div className="space-y-6 lg:col-span-7">
-            <div className="rounded border-hairline bg-[#F6F1E7] p-8 shadow-editorial">
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#8C6B3A] font-semibold">
-                SYSTEM SPECIFICATIONS
+        {/* TWO-COLUMN ARCHITECTURAL BREAKDOWN */}
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 mb-16">
+          {/* LEFT: THE SIH SPECIFICATION */}
+          <div className="space-y-6 lg:col-span-6">
+            <div className="rounded border border-[#6F665A]/20 bg-[#F6F1E7] p-8 shadow-sm">
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#8C6B3A] font-semibold">
+                SYSTEM ARCHITECTURE &amp; RBAC
               </span>
 
               <div className="mt-6 font-serif text-base leading-relaxed text-[#14110F]/90 space-y-4">
                 <p>
-                  Built for the Smart India Hackathon (SIH), Tourphin was conceived to eliminate friction between travelers and real local guides:
+                  Built as our debut entry for the <strong>Smart India Hackathon (SIH)</strong>, Tourphin challenged the rigid structure of mass tourism.
+                  Traditional portals lock visitors into static group packages. We built a system allowing authentic local residents to publish curated plans, and granted travelers the power to modify itineraries dynamically.
                 </p>
-                <ul className="space-y-2.5 font-mono text-xs text-[#6F665A] list-disc list-inside">
-                  <li>
-                    <strong className="text-[#14110F]">Role-Based Access Control:</strong> Isolated dashboards for Travelers, Verified Guides, and Platform Administrators.
+                <p>
+                  To manage concurrent stakeholders, I implemented strict <strong>Role-Based Access Control (RBAC)</strong> across three distinct personas:
+                </p>
+                <ul className="space-y-2 font-mono text-xs text-[#14110F]">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-[#B08D57] shrink-0 mt-0.5" />
+                    <span><strong>Administrator:</strong> Global audit logs, dispute arbitration, guide KYC verification.</span>
                   </li>
-                  <li>
-                    <strong className="text-[#14110F]">Dynamic Itinerary Modification:</strong> Guides introduce custom plans, and travelers can add custom waypoints with live fee adjustments.
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-[#B08D57] shrink-0 mt-0.5" />
+                    <span><strong>Local Guide:</strong> Bespoke itinerary authoring, pricing thresholds, booking confirmations.</span>
                   </li>
-                  <li>
-                    <strong className="text-[#14110F]">Webhook Idempotency:</strong> Razorpay payment signatures are validated cryptographically to prevent duplicate reservations.
-                  </li>
-                  <li>
-                    <strong className="text-[#14110F]">Cloud Edge Caching:</strong> Verification documents and media delivered via AWS S3 and CloudFront.
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-[#B08D57] shrink-0 mt-0.5" />
+                    <span><strong>Traveler:</strong> Custom stop insertions, Razorpay payment flows, real-time reviews.</span>
                   </li>
                 </ul>
               </div>
             </div>
+
+            {/* STACK TELEMETRY */}
+            <div className="rounded border border-[#6F665A]/20 bg-[#EDE5D3]/50 p-6 font-mono text-xs">
+              <span className="text-[10px] uppercase tracking-wider text-[#6F665A] block mb-3 font-semibold">
+                PROVENANCE TECH STACK
+              </span>
+              <div className="flex flex-wrap gap-2 text-[11px]">
+                {["React", "Supabase", "PostgreSQL", "Razorpay Webhooks", "Gemini API", "AWS S3 / IAM / CloudFront"].map((tech) => (
+                  <span key={tech} className="rounded border border-[#6F665A]/20 bg-[#FAF7F2] px-2.5 py-1 text-[#14110F]">
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Right Column: Clean Itinerary Demo */}
-          <div className="space-y-6 lg:col-span-5">
-            <div className="rounded border-hairline bg-[#EDE5D3]/40 p-6 shadow-editorial">
-              <div className="flex items-center justify-between border-b-hairline pb-3 font-mono text-[10px] text-[#6F665A]">
-                <span className="font-medium text-[#14110F]">
-                  ITINERARY CONFIGURATION PLATE
-                </span>
-                <span>INTERACTIVE</span>
+          {/* RIGHT: INTERACTIVE ITINERARY CUSTOMIZER */}
+          <div className="space-y-6 lg:col-span-6">
+            <div className="rounded border border-[#6F665A]/20 bg-[#FAF7F2] p-8 shadow-sm">
+              <div className="flex items-center justify-between border-b border-[#6F665A]/20 pb-4 font-mono text-[10px] text-[#6F665A]">
+                <span className="font-semibold text-[#8C6B3A]">INTERACTIVE ITINERARY ENGINE</span>
+                <span>CUSTOM STOP MODIFIER</span>
               </div>
 
-              <div className="mt-4 space-y-2">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-[#6F665A]">
-                  Active Selected Stops:
+              <p className="mt-4 font-serif text-sm text-[#6F665A]">
+                Experience how Tourphin allows travelers to customize guide plans by appending authentic cultural stops in real time:
+              </p>
+
+              {/* Active Itinerary List */}
+              <div className="my-6 space-y-2">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-[#6F665A] block">
+                  CURRENT COMMITTED ITINERARY ({itinerary.length} STOPS)
                 </span>
-                <div className="rounded border-hairline bg-[#F6F1E7] p-3 font-mono text-xs">
-                  <div className="text-[11px] text-[#8C6B3A] font-medium">
-                    &bull; Base Guide Standard Route &mdash; ₹1,200
-                  </div>
-                  {itinerary.map((stop) => (
-                    <div
-                      key={stop.id}
-                      className="mt-2 flex items-center justify-between rounded bg-[#EDE5D3]/50 px-2.5 py-1.5"
-                    >
-                      <span className="text-[11px] text-[#14110F]">
-                        + {stop.name} ({stop.duration})
+                {itinerary.map((stop, idx) => (
+                  <div
+                    key={stop.id}
+                    className="flex items-center justify-between rounded border border-[#6F665A]/15 bg-[#F6F1E7] p-3 text-xs"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-[10px] font-semibold text-[#8C6B3A]">
+                        0{idx + 1}
                       </span>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-[#8C6B3A]">₹{stop.cost}</span>
+                      <div>
+                        <span className="font-medium text-[#14110F] block">{stop.name}</span>
+                        <span className="font-serif text-[11px] text-[#6F665A]">{stop.highlight}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-[10px] text-[#6F665A]">{stop.duration} &bull; ₹{stop.cost}</span>
+                      {itinerary.length > 1 && (
                         <button
                           onClick={() => removeStop(stop.id)}
                           className="text-[#6F665A] hover:text-[#6B1E1E]"
+                          title="Remove stop"
                         >
                           <Trash2 className="h-3 w-3" />
                         </button>
-                      </div>
+                      )}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
 
-              {/* Add Custom Stop Options */}
-              <div className="mt-4">
-                <span className="font-mono text-[10px] uppercase tracking-wider text-[#6F665A]">
-                  Available Optional Waypoints:
+              {/* Addable Stops Drawer */}
+              <div className="mt-4 border-t border-[#6F665A]/15 pt-4">
+                <span className="font-mono text-[9px] uppercase tracking-wider text-[#6F665A] block mb-2">
+                  AVAILABLE LOCAL STOPS TO APPEND:
                 </span>
-                <div className="mt-2 space-y-1.5">
-                  {availableStops.map((stop) => {
+                <div className="grid grid-cols-1 gap-2">
+                  {catalogStops.map((stop) => {
                     const isAdded = itinerary.some((s) => s.id === stop.id);
                     return (
                       <button
                         key={stop.id}
                         onClick={() => addStop(stop)}
                         disabled={isAdded}
-                        className={`flex w-full items-center justify-between rounded border p-2 text-left font-mono text-xs transition-colors ${
+                        className={`flex items-center justify-between rounded border p-2.5 text-left text-xs transition-all ${
                           isAdded
-                            ? "border-hairline opacity-40 bg-transparent"
-                            : "border-hairline bg-[#F6F1E7] hover:border-[#B08D57]"
+                            ? "border-[#6F665A]/15 bg-[#EDE5D3]/30 opacity-60 cursor-default"
+                            : "border-[#6F665A]/25 bg-[#FAF7F2] hover:border-[#B08D57] hover:bg-[#EDE5D3]/50"
                         }`}
                       >
-                        <span className="text-[11px] text-[#14110F]">{stop.name}</span>
-                        <div className="flex items-center gap-1.5 text-[#8C6B3A] font-medium text-[11px]">
-                          <span>₹{stop.cost}</span>
-                          {!isAdded && <Plus className="h-3 w-3" />}
+                        <div>
+                          <span className="font-medium text-[#14110F]">{stop.name}</span>
+                          <span className="font-serif text-[10px] text-[#6F665A] block">{stop.duration}</span>
                         </div>
+                        <span className="font-mono text-[11px] font-semibold text-[#8C6B3A]">
+                          {isAdded ? "Added" : `+ ₹${stop.cost}`}
+                        </span>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              <div className="mt-6 flex items-baseline justify-between border-t-hairline pt-3 font-mono">
-                <span className="text-[10px] uppercase text-[#6F665A]">Calculated Total:</span>
-                <span className="font-display text-2xl font-light text-[#14110F]">
-                  ₹{totalCost.toLocaleString()}
-                </span>
+              {/* Calculated Total Bar */}
+              <div className="mt-6 flex items-center justify-between border-t border-[#6F665A]/20 pt-4 font-mono text-xs">
+                <span className="text-[#6F665A]">Total Est. Package:</span>
+                <span className="text-base font-semibold text-[#14110F]">₹{totalCost}</span>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* SEAL CONFERMENT CARD */}
+        <div className="rounded border border-[#B08D57]/40 bg-[#FAF7F2] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
+          <div className="flex items-center gap-5">
+            <GoldMedallion
+              numeral="III"
+              title="The Architect"
+              isUnlocked={hasSeal}
+              size="lg"
+            />
+            <div>
+              <span className="block font-mono text-[10px] uppercase tracking-[0.22em] text-[#8C6B3A]">
+                CHAPTER III SEAL &bull; THE ARCHITECT
+              </span>
+              <h4 className="font-display text-xl font-medium text-[#14110F]">
+                {hasSeal ? "Seal Conferred &amp; Inscribed" : "First Full-Stack Architecture"}
+              </h4>
+              <p className="font-serif text-xs text-[#6F665A] mt-1">
+                Conferred upon inspecting the Tourphin SIH travel platform and verified production metrics.
+              </p>
+            </div>
+          </div>
+
+          {!hasSeal ? (
+            <button
+              onClick={() => unlockSeal("seal_tourphin")}
+              onMouseEnter={() => setCursorLabel("CLAIM")}
+              onMouseLeave={() => setCursorLabel(null)}
+              className="flex items-center gap-2 rounded border border-[#B08D57] bg-[#EDE5D3] px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:bg-[#FAF7F2] transition-colors"
+            >
+              <span>Confer Seal III</span>
+              <ChevronRight className="h-3.5 w-3.5 text-[#B08D57]" />
+            </button>
+          ) : (
+            <span className="font-mono text-[10px] uppercase tracking-widest text-[#8C6B3A] border border-[#B08D57]/40 px-3 py-1 rounded bg-[#EDE5D3]/40">
+              Recorded in Archives
+            </span>
+          )}
         </div>
       </div>
     </section>
