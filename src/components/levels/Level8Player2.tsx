@@ -1,23 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useCollector } from "@/context/CollectorContext";
-import { InkDoodleCanvas } from "@/components/canvas/InkDoodleCanvas";
-import { CertificateOfPassage } from "@/components/certificate/CertificateOfPassage";
-import { GoldMedallion } from "@/components/seals/GoldMedallion";
-import { LineMaskReveal } from "@/components/motion/LineMaskReveal";
+import React, { useState, useEffect, useRef } from "react";
+import { useStickerWorld } from "@/context/StickerWorldContext";
 import { supabase } from "@/lib/supabase/client";
-import {
-  Send,
-  Download,
-  Mail,
-  Phone,
-  CheckCircle2,
-  AlertCircle,
-  UserCheck,
-  Award,
-  ChevronRight,
-} from "lucide-react";
+import { Send, Download, Mail, Phone, CheckCircle2, AlertCircle, Sparkles, Trophy, Gamepad2, Heart, ExternalLink } from "lucide-react";
 
 interface GuestEntry {
   id: string;
@@ -28,15 +14,14 @@ interface GuestEntry {
 }
 
 export function Level8Player2() {
-  const { unlockSeal, rank, sealsEarned, setCursorLabel } = useCollector();
+  const { addStickers, completeQuest, setMascotSpeech, stickers, level } = useStickerWorld();
 
   // Guestbook state
   const [entries, setEntries] = useState<GuestEntry[]>([]);
   const [guestName, setGuestName] = useState("");
   const [guestMessage, setGuestMessage] = useState("");
-  const [doodleData, setDoodleData] = useState<string | null>(null);
   const [guestLoading, setGuestLoading] = useState(false);
-  const [guestMsgFeedback, setGuestMsgFeedback] = useState<string | null>(null);
+  const [guestFeedback, setGuestFeedback] = useState<string | null>(null);
 
   // Contact state
   const [contactName, setContactName] = useState("");
@@ -47,14 +32,16 @@ export function Level8Player2() {
   const [contactStatus, setContactStatus] = useState<"idle" | "success" | "error">("idle");
   const [contactError, setContactError] = useState<string | null>(null);
 
-  // Certificate personalization
-  const [certificateName, setCertificateName] = useState("Distinguished Reader");
-  const [dateStamp, setDateStamp] = useState("October 2026");
+  // Downloadable Player Card Canvas
+  const [playerName, setPlayerName] = useState("Player 2");
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  // Arcade Mini-Game (Sticker Catcher)
+  const [gameScore, setGameScore] = useState(0);
+  const [gameActive, setGameActive] = useState(false);
+
+  // Initial guestbook fetch & Realtime subscription
   useEffect(() => {
-    setDateStamp(new Date().toLocaleDateString());
-    unlockSeal("seal_last_page");
-
     fetch("/api/guestbook")
       .then((res) => res.json())
       .then((data) => {
@@ -63,7 +50,7 @@ export function Level8Player2() {
       .catch(() => {});
 
     const channel = supabase
-      .channel("collector_guestbook")
+      .channel("sticker_guestbook")
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "guestbook" },
@@ -77,12 +64,14 @@ export function Level8Player2() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [unlockSeal]);
+  }, []);
 
   const handleGuestbookSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!guestName.trim() || !guestMessage.trim()) return;
+
     setGuestLoading(true);
-    setGuestMsgFeedback(null);
+    setGuestFeedback(null);
 
     try {
       const res = await fetch("/api/guestbook", {
@@ -91,26 +80,21 @@ export function Level8Player2() {
         body: JSON.stringify({
           name: guestName.trim(),
           message: guestMessage.trim(),
-          doodle_data: doodleData,
           honeypot: "",
         }),
       });
 
       const result = await res.json();
-      if (!res.ok) throw new Error(result.error || "Failed to record signature.");
+      if (!res.ok) throw new Error(result.error || "Failed to record message.");
 
-      unlockSeal("seal_guestbook");
+      setGuestFeedback("Sticky note posted to the world wall! +5 Stickers awarded! ⭐");
       setGuestName("");
       setGuestMessage("");
-      setDoodleData(null);
-      setGuestMsgFeedback("Signature permanently recorded in the ledger.");
-
-      if (result.entry) {
-        setEntries((prev) => [result.entry, ...prev]);
-      }
+      addStickers(5, "guestbook_sign");
+      completeQuest("q_guestbook");
+      setMascotSpeech("Thank you for signing my desk! You're officially part of the story!", 4500);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Error submitting signature";
-      setGuestMsgFeedback(msg);
+      setGuestFeedback(err instanceof Error ? err.message : "Error posting note.");
     } finally {
       setGuestLoading(false);
     }
@@ -129,314 +113,381 @@ export function Level8Player2() {
         body: JSON.stringify({
           name: contactName.trim(),
           email: contactEmail.trim(),
-          subject: contactSubject.trim() || undefined,
+          subject: contactSubject.trim() || "Portfolio Transmission",
           message: contactBody.trim(),
           honeypot: "",
         }),
       });
 
       const result = await res.json();
-      if (!res.ok) throw new Error(result.error || "Failed to dispatch communication.");
+      if (!res.ok) throw new Error(result.error || "Failed to transmit message.");
 
       setContactStatus("success");
       setContactName("");
       setContactEmail("");
       setContactSubject("");
       setContactBody("");
+      addStickers(3, "contact_sent");
+      setMascotSpeech("Message transmitted directly to Srajan's inbox! He will reply shortly!", 4500);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Delivery failure.";
       setContactStatus("error");
-      setContactError(msg);
+      setContactError(err instanceof Error ? err.message : "Transmission failed.");
     } finally {
       setContactLoading(false);
     }
   };
 
+  // Generate Player Card PNG
+  const downloadPlayerCard = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Dimensions: 600 x 400
+    canvas.width = 600;
+    canvas.height = 400;
+
+    // Background paper
+    ctx.fillStyle = "#FFF8EC";
+    ctx.fillRect(0, 0, 600, 400);
+
+    // Thick ink border
+    ctx.lineWidth = 12;
+    ctx.strokeStyle = "#14121A";
+    ctx.strokeRect(6, 6, 588, 388);
+
+    // Header strip
+    ctx.fillStyle = "#FFC93C";
+    ctx.fillRect(12, 12, 576, 70);
+    ctx.fillStyle = "#14121A";
+    ctx.font = "bold 24px monospace";
+    ctx.fillText("SRAJAN'S STICKER WORLD", 30, 56);
+
+    // Badge
+    ctx.fillStyle = "#2F5BFF";
+    ctx.fillRect(440, 26, 130, 42);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "bold 16px monospace";
+    ctx.fillText(level.toUpperCase(), 465, 52);
+
+    // Player Name
+    ctx.fillStyle = "#14121A";
+    ctx.font = "bold 32px sans-serif";
+    ctx.fillText(playerName || "Player 2", 30, 140);
+
+    // Stats
+    ctx.font = "18px monospace";
+    ctx.fillText(`⭐ Total Stickers: ${stickers}`, 30, 190);
+    ctx.fillText(`🎮 Rank Status: ${level}`, 30, 225);
+    ctx.fillText(`📅 Certified: ${new Date().toLocaleDateString()}`, 30, 260);
+
+    // Watermark
+    ctx.fillStyle = "#FF4D2E";
+    ctx.font = "bold 14px monospace";
+    ctx.fillText("srajan.dev • Software Developer", 30, 340);
+
+    // Trigger download
+    const link = document.createElement("a");
+    link.download = `${playerName.replace(/\s+/g, "_")}_Player_Card.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+    addStickers(2, "download_card");
+  };
+
   return (
     <section
       id="chapter-8"
-      className="relative min-h-screen w-full border-b-hairline bg-[#F6F1E7] py-20 px-6 sm:px-12 md:py-28"
+      className="relative min-h-screen w-full bg-[#FFF8EC] py-20 px-4 sm:px-8 md:py-28 lg:px-16"
     >
-      <div className="mx-auto max-w-5xl">
-        {/* Chapter Header */}
-        <div className="mb-12 flex flex-wrap items-baseline justify-between border-b-hairline pb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F665A]">
-          <div className="flex items-center gap-2">
-            <span className="text-[#8C6B3A] font-semibold">CHAPTER VIII</span>
-            <span>&bull;</span>
-            <span>THE LAST PAGE // THE CONFERRER</span>
+      <div className="mx-auto max-w-6xl">
+        {/* CHAPTER STICKER HEADER */}
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b-4 border-[#14121A] pb-6 mb-12">
+          <div className="flex items-center gap-3">
+            <span className="bg-[#3DDC97] text-[#14121A] border-2 border-[#14121A] px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider shadow-hard-sm rotate-[-1deg]">
+              CHAPTER 08
+            </span>
+            <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#14121A]/70">
+              THE LAST PAGE • PLAYER 2
+            </span>
           </div>
-          <div className="flex items-center gap-1.5 text-[#14110F]">
-            <UserCheck className="h-3.5 w-3.5 text-[#B08D57]" />
-            <span>OPEN TO SOFTWARE ENGINEERING ROLES</span>
+
+          <div className="inline-flex items-center gap-2 bg-[#FF4D2E] text-white border-2 border-[#14121A] px-3 py-1 font-mono text-xs font-bold shadow-hard-sm">
+            <Heart className="h-3.5 w-3.5" />
+            <span>COMMUNITY LEDGER &amp; TRANSMISSION</span>
           </div>
         </div>
 
-        {/* Chapter Title */}
-        <div className="mb-14">
-          <LineMaskReveal threshold={0.1}>
-            <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#14110F]">
-              The Last <span className="italic font-serif text-[#6B1E1E]">Page</span>
-            </h2>
-          </LineMaskReveal>
-          <p className="mt-4 max-w-2xl font-serif text-lg font-light text-[#6F665A] leading-relaxed">
-            You have reached the close of this edition. Sign the archival ledger, transmit an inquiry, or download the verified resume dossier below.
+        {/* HERO TITLE & INTRO */}
+        <div className="mb-14 max-w-4xl">
+          <div className="inline-block bg-white border-2 border-[#14121A] px-3 py-1 text-xs font-mono font-bold uppercase shadow-hard-sm mb-4 rotate-[1deg]">
+            🤝 LEAVE A STICKER &bull; TRANSMIT A TRANSMISSION
+          </div>
+          <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-black tracking-tight text-[#14121A] leading-tight">
+            Leave Your Mark, <br />
+            <span className="bg-[#3DDC97] px-2 py-0.5 border-3 border-[#14121A] shadow-hard inline-block rotate-[-1deg] text-[#14121A]">
+              Connect With Srajan
+            </span>
+          </h2>
+          <p className="mt-6 font-sans text-lg md:text-xl text-[#14121A]/80 font-medium leading-relaxed max-w-3xl">
+            You&apos;ve journeyed from matriculation day at BPIT, through 60-member Octave rock stages, the LeetCode grind, SIH Tourphin, the Nagarro podium, CLAVIS architecture, to live production at Hudle.
+            Now it&apos;s your turn: pin a note to the wall, or transmit an opportunity!
           </p>
         </div>
 
-        {/* Career Dossier & Resume Action Card */}
-        <div className="mb-14 rounded border border-[#6F665A]/20 bg-[#FAF7F2] p-8 shadow-sm">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        {/* SECTION 1: GUESTBOOK WALL & CONTACT DESK */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+          {/* GUESTBOOK LEDGER (6 cols) */}
+          <div className="lg:col-span-6 border-4 border-[#14121A] bg-white p-6 sm:p-8 shadow-hard-lg flex flex-col justify-between">
             <div>
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#8C6B3A] font-semibold">
-                PROFESSIONAL ENGAGEMENT
-              </span>
-              <h3 className="font-display text-2xl sm:text-3xl font-light text-[#14110F] mt-1">
-                Open to Full-Stack &amp; Backend Engineering
-              </h3>
-              <p className="mt-2 font-serif text-sm text-[#6F665A] max-w-xl">
-                Available for software engineering roles in New Delhi, hybrid, or remote setups. Focusing on resilient distributed systems, payment reconciliation, and developer tooling.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <a
-                href="/api/resume"
-                target="_blank"
-                rel="noopener noreferrer"
-                onMouseEnter={() => setCursorLabel("DOWNLOAD")}
-                onMouseLeave={() => setCursorLabel(null)}
-                className="flex items-center gap-2 rounded border border-[#6F665A]/30 bg-[#EDE5D3] px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] transition-colors"
-              >
-                <Download className="h-3.5 w-3.5 text-[#B08D57]" />
-                <span>Resume Dossier (PDF)</span>
-              </a>
-
-              <a
-                href="mailto:srivasrajan8@gmail.com"
-                className="flex items-center gap-2 rounded border border-[#6F665A]/20 bg-[#F6F1E7] px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] transition-colors"
-              >
-                <Mail className="h-3.5 w-3.5 text-[#B08D57]" />
-                <span>Email Directly</span>
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Certificate of Passage Finale */}
-        <div className="mb-16">
-          <CertificateOfPassage
-            recipientName={certificateName}
-            onNameChange={setCertificateName}
-            rank={rank}
-            sealsEarnedCount={sealsEarned.length}
-            dateStamp={dateStamp}
-          />
-        </div>
-
-        {/* SEAL VIII CONFERMENT CARD */}
-        <div className="mb-16 rounded border border-[#B08D57]/40 bg-[#FAF7F2] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
-          <div className="flex items-center gap-5">
-            <GoldMedallion
-              numeral="VIII"
-              title="The Conferrer"
-              isUnlocked={sealsEarned.includes("seal_last_page")}
-              size="lg"
-            />
-            <div>
-              <span className="block font-mono text-[10px] uppercase tracking-[0.22em] text-[#8C6B3A]">
-                CHAPTER VIII SEAL &bull; THE CONFERRER
-              </span>
-              <h4 className="font-display text-xl font-medium text-[#14110F]">
-                The Colophon &amp; Passage
-              </h4>
-              <p className="font-serif text-xs text-[#6F665A] mt-1">
-                Conferred upon reaching the final folio of Srajan Srivastava&apos;s monograph.
-              </p>
-            </div>
-          </div>
-
-          <span className="font-mono text-[10px] uppercase tracking-widest text-[#8C6B3A] border border-[#B08D57]/40 px-3 py-1 rounded bg-[#EDE5D3]/40">
-            Recorded in Archives
-          </span>
-        </div>
-
-        {/* Two Columns: Guestbook & Contact */}
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
-          {/* Left Column: Guestbook */}
-          <div className="space-y-6 lg:col-span-6">
-            <div className="rounded border-hairline bg-[#FAF7F2] p-8 shadow-editorial">
-              <div className="flex items-center justify-between border-b-hairline pb-3 font-mono text-[10px] text-[#6F665A]">
-                <span className="font-medium text-[#14110F]">ARCHIVAL GUESTBOOK</span>
-                <span>{entries.length} INSCRIPTIONS</span>
+              <div className="flex items-center justify-between border-b-2 border-[#14121A]/10 pb-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">📌</span>
+                  <h3 className="font-display text-xl font-black text-[#14121A]">
+                    Public Sticker Wall
+                  </h3>
+                </div>
+                <span className="font-mono text-xs bg-[#FFC93C] border border-[#14121A] px-2 py-0.5 font-bold">
+                  LIVE REALTIME
+                </span>
               </div>
 
-              {guestMsgFeedback && (
-                <div className="mt-3 rounded border border-[#B08D57]/40 bg-[#EDE5D3]/40 p-2 font-mono text-xs text-[#8C6B3A]">
-                  {guestMsgFeedback}
-                </div>
-              )}
-
-              <form onSubmit={handleGuestbookSubmit} className="mt-4 space-y-3 font-mono text-xs">
+              {/* Guestbook Form */}
+              <form onSubmit={handleGuestbookSubmit} className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-[#14110F] font-medium text-[11px]">Your Name / Identity:</label>
                   <input
                     type="text"
-                    required
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
-                    placeholder="e.g. Fellow Engineer"
-                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
+                    placeholder="Your Name or GitHub Handle..."
+                    required
+                    className="w-full border-2 border-[#14121A] p-2.5 font-mono text-xs outline-none focus:ring-2 focus:ring-[#2F5BFF] bg-[#FFF8EC]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-[#14110F] font-medium text-[11px]">Note / Inscription:</label>
                   <textarea
-                    required
-                    rows={3}
                     value={guestMessage}
                     onChange={(e) => setGuestMessage(e.target.value)}
-                    placeholder="Leave a thought, reflection, or note..."
-                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
+                    placeholder="Leave a message, greeting, or feedback..."
+                    required
+                    rows={3}
+                    className="w-full border-2 border-[#14121A] p-2.5 font-mono text-xs outline-none focus:ring-2 focus:ring-[#2F5BFF] bg-[#FFF8EC]"
                   />
                 </div>
 
-                <div className="pt-2">
-                  <InkDoodleCanvas onDoodleChange={setDoodleData} />
-                </div>
+                {guestFeedback && (
+                  <div className="border border-[#14121A] bg-[#3DDC97]/30 p-2 font-mono text-xs font-bold text-[#14121A]">
+                    {guestFeedback}
+                  </div>
+                )}
 
                 <button
                   type="submit"
                   disabled={guestLoading}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded border border-[#6F665A]/30 bg-[#EDE5D3] py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] disabled:opacity-50 transition-colors"
+                  className="btn-press w-full py-2.5 bg-[#FFC93C] text-[#14121A] border-2 border-[#14121A] font-mono text-xs font-bold uppercase tracking-wider shadow-hard-sm"
                 >
-                  <span>{guestLoading ? "Recording..." : "Record Inscription to Archive"}</span>
+                  {guestLoading ? "POSTING NOTE..." : "PIN NOTE TO WALL (+5 ⭐)"}
                 </button>
               </form>
+            </div>
 
-              {/* Inscriptions Feed */}
-              <div className="mt-8 border-t-hairline pt-4">
-                <span className="font-mono text-[10px] uppercase text-[#6F665A]">Recent Inscriptions:</span>
-                <div className="mt-3 max-h-[260px] space-y-2.5 overflow-y-auto pr-1">
-                  {entries.map((entry) => (
-                    <div key={entry.id} className="rounded border-hairline bg-[#F6F1E7] p-3 text-xs">
-                      <div className="flex justify-between font-mono text-[10px] text-[#6F665A]">
-                        <span className="font-medium text-[#14110F]">{entry.name}</span>
-                        <span>{new Date(entry.created_at).toLocaleDateString()}</span>
-                      </div>
-                      <p className="mt-1 font-serif text-xs text-[#14110F]/80">
-                        &ldquo;{entry.message}&rdquo;
-                      </p>
-                      {entry.doodle_data && (
-                        <div className="mt-2">
-                          <img
-                            src={entry.doodle_data}
-                            alt="Doodle"
-                            className="h-8 rounded border-hairline bg-white/40 p-0.5"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ))}
+            {/* Recent Wall Notes */}
+            <div className="border-t-2 border-[#14121A]/10 pt-4 max-h-60 overflow-y-auto space-y-2">
+              <span className="font-mono text-[10px] font-bold uppercase text-[#14121A]/60 block mb-1">
+                RECENT STICKY NOTES ({entries.length}):
+              </span>
+              {entries.slice(0, 5).map((entry) => (
+                <div
+                  key={entry.id}
+                  className="border-2 border-[#14121A] bg-[#FFF8EC] p-3 shadow-hard-sm rotate-[-0.5deg]"
+                >
+                  <div className="flex items-center justify-between font-mono text-[11px] font-bold">
+                    <span className="text-[#2F5BFF]">{entry.name}</span>
+                    <span className="text-[#14121A]/50 text-[9px]">
+                      {new Date(entry.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="font-sans text-xs text-[#14121A] mt-1 leading-snug">
+                    {entry.message}
+                  </p>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Right Column: Contact Desk */}
-          <div className="space-y-6 lg:col-span-6">
-            <div className="rounded border-hairline bg-[#FAF7F2] p-8 shadow-editorial">
-              <div className="flex items-center justify-between border-b-hairline pb-3 font-mono text-[10px] text-[#6F665A]">
-                <span className="font-medium text-[#14110F]">DIRECT TRANSMISSION DESK</span>
-                <span>INBOX</span>
+          {/* CONTACT TRANSMISSION DESK (6 cols) */}
+          <div className="lg:col-span-6 border-4 border-[#14121A] bg-[#14121A] text-white p-6 sm:p-8 shadow-hard-lg flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between border-b border-white/20 pb-4 mb-6">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-[#3DDC97]" />
+                  <h3 className="font-display text-xl font-black text-white">
+                    Transmit Direct Message
+                  </h3>
+                </div>
+                <span className="font-mono text-xs text-[#3DDC97]">ENCRYPTED</span>
               </div>
 
-              {contactStatus === "success" && (
-                <div className="mt-4 flex items-center gap-2 rounded border border-[#B08D57]/40 bg-[#EDE5D3]/40 p-3 font-mono text-xs text-[#8C6B3A]">
-                  <CheckCircle2 className="h-4 w-4 shrink-0" />
-                  <span>Communication recorded. Srajan will review and reply promptly.</span>
-                </div>
-              )}
-
-              {contactStatus === "error" && (
-                <div className="mt-4 flex items-center gap-2 rounded border border-[#6B1E1E]/30 bg-[#6B1E1E]/5 p-3 font-mono text-xs text-[#6B1E1E]">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
-                  <span>{contactError}</span>
-                </div>
-              )}
-
-              <form onSubmit={handleContactSubmit} className="mt-4 space-y-4 font-mono text-xs">
+              <form onSubmit={handleContactSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-[#14110F] font-medium text-[11px]">Your Name:</label>
                   <input
                     type="text"
-                    required
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
-                    placeholder="e.g. Hiring Manager / Tech Lead"
-                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
+                    placeholder="Your Name *"
+                    required
+                    className="w-full border-2 border-white/20 bg-white/5 p-2.5 font-mono text-xs text-white outline-none focus:border-[#3DDC97]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-[#14110F] font-medium text-[11px]">Email Address:</label>
                   <input
                     type="email"
-                    required
                     value={contactEmail}
                     onChange={(e) => setContactEmail(e.target.value)}
-                    placeholder="lead@company.com"
-                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
+                    placeholder="Your Email *"
+                    required
+                    className="w-full border-2 border-white/20 bg-white/5 p-2.5 font-mono text-xs text-white outline-none focus:border-[#3DDC97]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-[#14110F] font-medium text-[11px]">Subject:</label>
                   <input
                     type="text"
                     value={contactSubject}
                     onChange={(e) => setContactSubject(e.target.value)}
-                    placeholder="Full Stack Opportunity / Technical Inscription"
-                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
+                    placeholder="Subject (e.g. Software Engineer Opportunity)"
+                    className="w-full border-2 border-white/20 bg-white/5 p-2.5 font-mono text-xs text-white outline-none focus:border-[#3DDC97]"
+                  />
+                </div>
+                <div>
+                  <textarea
+                    value={contactBody}
+                    onChange={(e) => setContactBody(e.target.value)}
+                    placeholder="Your message / project details..."
+                    required
+                    rows={4}
+                    className="w-full border-2 border-white/20 bg-white/5 p-2.5 font-mono text-xs text-white outline-none focus:border-[#3DDC97]"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-[#14110F] font-medium text-[11px]">Message:</label>
-                  <textarea
-                    required
-                    rows={4}
-                    value={contactBody}
-                    onChange={(e) => setContactBody(e.target.value)}
-                    placeholder="Describe your project, team, or opportunity..."
-                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
-                  />
-                </div>
+                {contactStatus === "success" && (
+                  <div className="p-3 bg-[#3DDC97]/20 border border-[#3DDC97] text-[#3DDC97] font-mono text-xs font-bold flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    <span>Message transmitted successfully!</span>
+                  </div>
+                )}
+
+                {contactStatus === "error" && (
+                  <div className="p-3 bg-red-500/20 border border-red-500 text-red-400 font-mono text-xs font-bold flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4" />
+                    <span>{contactError || "Failed to send message."}</span>
+                  </div>
+                )}
 
                 <button
                   type="submit"
                   disabled={contactLoading}
-                  className="flex w-full items-center justify-center gap-2 rounded border border-[#6F665A]/30 bg-[#EDE5D3] py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] disabled:opacity-50 transition-colors"
+                  className="btn-press w-full py-2.5 bg-[#3DDC97] text-[#14121A] border-2 border-black font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2"
                 >
-                  <Send className="h-3.5 w-3.5 text-[#B08D57]" />
-                  <span>{contactLoading ? "Transmitting..." : "Send Direct Transmission"}</span>
+                  <Send className="h-3.5 w-3.5" />
+                  <span>{contactLoading ? "TRANSMITTING..." : "TRANSMIT MESSAGE (+3 ⭐)"}</span>
                 </button>
               </form>
-
-              {/* Direct Coordinates */}
-              <div className="mt-8 border-t-hairline pt-4 font-mono text-[11px] text-[#6F665A] space-y-2">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-3 w-3 text-[#B08D57]" />
-                  <a href="mailto:srivasrajan8@gmail.com" className="hover:underline text-[#14110F]">
-                    srivasrajan8@gmail.com
-                  </a>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-3 w-3 text-[#B08D57]" />
-                  <span>+91 7007968745</span>
-                </div>
-              </div>
             </div>
+
+            {/* Direct Contact Coordinates */}
+            <div className="mt-6 pt-4 border-t border-white/20 flex flex-wrap items-center justify-between gap-4 font-mono text-xs text-white/70">
+              <a
+                href="mailto:srivasrajan8@gmail.com"
+                className="hover:text-white underline decoration-[#3DDC97]"
+              >
+                srivasrajan8@gmail.com
+              </a>
+              <a
+                href="/api/resume"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-[#FFC93C] hover:text-white"
+              >
+                <Download className="h-3.5 w-3.5" />
+                <span>DOWNLOAD RESUME (PDF)</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 2: DOWNLOADABLE PLAYER CARD GENERATOR */}
+        <div className="border-4 border-[#14121A] bg-[#FFC93C] p-6 sm:p-8 shadow-hard-lg mb-16">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#14121A]/80">
+                PLAYER CERTIFICATE ENGINE
+              </span>
+              <h3 className="font-display text-2xl sm:text-3xl font-black text-[#14121A] mt-1">
+                Generate Your Personalized &ldquo;Player Card&rdquo; PNG
+              </h3>
+              <p className="font-sans text-xs text-[#14121A]/80 mt-1 max-w-xl">
+                Enter your name or gamer tag to render an official collectible card showing your stickers collected and verified level status.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+              <input
+                type="text"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                placeholder="Enter Your Name..."
+                className="border-2 border-[#14121A] bg-white px-3 py-2 font-mono text-xs font-bold outline-none w-full sm:w-48"
+              />
+              <button
+                onClick={downloadPlayerCard}
+                className="btn-press flex items-center gap-2 border-2 border-[#14121A] bg-[#14121A] text-white px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider shadow-hard-sm shrink-0 w-full sm:w-auto justify-center"
+              >
+                <Download className="h-4 w-4" />
+                <span>DOWNLOAD PNG</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Hidden Canvas for PNG export */}
+          <canvas ref={canvasRef} className="hidden" />
+        </div>
+
+        {/* FOOTER COLOPHON */}
+        <div className="border-t-4 border-[#14121A] pt-8 flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-[#14121A]/70">
+          <div>
+            &copy; 2026 Srajan Srivastava &bull; Handcrafted in New Delhi with Next.js 16 &amp; Supabase
+          </div>
+          <div className="flex items-center gap-4">
+            <a
+              href="https://github.com/Srajan-21"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#14121A] underline"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://linkedin.com/in/srajan-srivastava"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#14121A] underline"
+            >
+              LinkedIn
+            </a>
+            <a
+              href="https://leetcode.com/u/SRAJAN 9839"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#14121A] underline"
+            >
+              LeetCode
+            </a>
+            <a
+              href="/admin"
+              className="hover:text-[#14121A] underline font-bold text-[#FF4D2E]"
+            >
+              Backstage CMS ➔
+            </a>
           </div>
         </div>
       </div>

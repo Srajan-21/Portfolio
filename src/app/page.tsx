@@ -19,10 +19,12 @@ import { Level5Clavis } from "@/components/levels/Level5Clavis";
 import { Level6RealWorld } from "@/components/levels/Level6RealWorld";
 import { Level7Inventory } from "@/components/levels/Level7Inventory";
 import { Level8Player2 } from "@/components/levels/Level8Player2";
+import { CardBinderModal } from "@/components/cards/CardBinderModal";
+import { QuestLogModal } from "@/components/quests/QuestLogModal";
 import { AskSrajanChat } from "@/components/chat/AskSrajanChat";
 
 function StickerWorldContainer() {
-  const { setActiveChapter, completeQuest } = useStickerWorld();
+  const { setActiveChapter, completeQuest, openWindows, closeWindow } = useStickerWorld();
   const [showSplash, setShowSplash] = useState<boolean>(true);
 
   // Check if splash was already viewed in this browser session
@@ -146,6 +148,16 @@ function StickerWorldContainer() {
           {/* CHAPTER VIII: THE LAST PAGE • GUESTBOOK & CONTACT */}
           <Level8Player2 />
         </main>
+
+        {/* TRADING CARDS BINDER & QUEST LOG MODALS */}
+        <CardBinderModal
+          isOpen={openWindows.includes("binder")}
+          onClose={() => closeWindow("binder")}
+        />
+        <QuestLogModal
+          isOpen={openWindows.includes("quests")}
+          onClose={() => closeWindow("quests")}
+        />
 
         {/* AI Chat Bot Assistant */}
         <AskSrajanChat />
