@@ -1,26 +1,180 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #F2EBDD;
+  --paper-light: #FBF8F1;
+  --paper-dark: #E4D7C2;
+  --paper-border: #D3C4A5;
+  --ink: #1B1A17;
+  --ink-faded: #4B463E;
+  --ink-muted: #837B6D;
+  --vermilion: #D9432B;
+  --vermilion-dark: #B5321D;
+  --ochre: #C99A3B;
+  --sage: #7A8B6F;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --paper: #181512;
+  --paper-light: #24201A;
+  --paper-dark: #100E0C;
+  --paper-border: #3A3328;
+  --ink: #EBE3D3;
+  --ink-faded: #B2A896;
+  --ink-muted: #7E7565;
+  --vermilion: #E55840;
+  --vermilion-dark: #C9422B;
+  --ochre: #DEB459;
+  --sage: #92A585;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@theme {
+  --color-paper: var(--paper);
+  --color-paper-light: var(--paper-light);
+  --color-paper-dark: var(--paper-dark);
+  --color-paper-border: var(--paper-border);
+  --color-ink: var(--ink);
+  --color-ink-faded: var(--ink-faded);
+  --color-ink-muted: var(--ink-muted);
+  --color-vermilion: var(--vermilion);
+  --color-vermilion-dark: var(--vermilion-dark);
+  --color-ochre: var(--ochre);
+  --color-sage: var(--sage);
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+  --font-hand: var(--font-caveat), cursive;
+}
+
+html {
+  background-color: var(--paper);
+  color: var(--ink);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Riso Print Misregistration Effect */
+.riso-title {
+  position: relative;
+  display: inline-block;
+  color: var(--ink);
+}
+
+.riso-title::before {
+  content: attr(data-text);
+  position: absolute;
+  top: -1.5px;
+  left: -2px;
+  color: var(--vermilion);
+  opacity: 0.72;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  user-select: none;
+  z-index: -1;
+}
+
+.riso-title::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 1.5px;
+  left: 2px;
+  color: #2D6B78;
+  opacity: 0.55;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  user-select: none;
+  z-index: -2;
+}
+
+.dark .riso-title::before {
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+
+.dark .riso-title::after {
+  mix-blend-mode: screen;
+  opacity: 0.45;
+}
+
+/* Halftone dot pattern */
+.bg-halftone {
+  background-image: radial-gradient(var(--ink-muted) 1px, transparent 0);
+  background-size: 16px 16px;
+  opacity: 0.15;
+}
+
+/* Postage stamp scalloped border */
+.stamp-border {
+  border: 2px dashed var(--vermilion);
+  outline: 4px solid transparent;
+  box-shadow: 0 0 0 4px rgba(217, 67, 43, 0.15);
+}
+
+/* Masked torn paper look */
+.torn-edge-bottom {
+  clip-path: polygon(
+    0% 0%, 100% 0%, 100% 97%,
+    98% 99%, 95% 96%, 92% 98%, 89% 95%, 86% 99%,
+    82% 96%, 79% 98%, 75% 95%, 72% 99%, 68% 96%,
+    65% 98%, 61% 95%, 58% 99%, 54% 96%, 51% 98%,
+    47% 95%, 44% 99%, 40% 96%, 37% 98%, 33% 95%,
+    30% 99%, 26% 96%, 23% 98%, 19% 95%, 16% 99%,
+    12% 96%, 9% 98%, 5% 95%, 2% 99%, 0% 96%
+  );
+}
+
+.torn-edge-top {
+  clip-path: polygon(
+    0% 4%, 2% 1%, 5% 4%, 9% 2%, 12% 5%,
+    16% 2%, 19% 5%, 23% 2%, 26% 5%, 30% 1%,
+    33% 5%, 37% 2%, 40% 5%, 44% 1%, 47% 5%,
+    51% 2%, 54% 5%, 58% 1%, 61% 5%, 65% 2%,
+    68% 5%, 72% 1%, 75% 5%, 79% 2%, 82% 5%,
+    86% 1%, 89% 5%, 92% 2%, 95% 5%, 98% 1%,
+    100% 4%, 100% 100%, 0% 100%
+  );
+}
+
+/* Paper grain noise overlay */
+.paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* Rubber Stamp Slam Animation */
+@keyframes stampSlam {
+  0% {
+    transform: scale(3) rotate(-15deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.9) rotate(-3deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(1.05) rotate(-5deg);
+  }
+  100% {
+    transform: scale(1) rotate(-4deg);
+    opacity: 0.95;
+  }
+}
+
+.animate-stamp-slam {
+  animation: stampSlam 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Hide scrollbars for clean journal feel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
