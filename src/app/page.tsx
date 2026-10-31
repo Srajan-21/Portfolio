@@ -7,6 +7,8 @@ import { CustomCursor } from "@/components/ui/CustomCursor";
 import { CollectorTopBar } from "@/components/layout/CollectorTopBar";
 import { VerticalChapterIndex } from "@/components/layout/VerticalChapterIndex";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { TheCabinet } from "@/components/layout/TheCabinet";
+import { ChapterCurtainDivider } from "@/components/layout/ChapterCurtainDivider";
 import { SplashScreen } from "@/components/ui/SplashScreen";
 import { Level0TitleScreen } from "@/components/levels/Level0TitleScreen";
 import { Level1Origins } from "@/components/levels/Level1Origins";
@@ -111,6 +113,7 @@ function CollectorContainer() {
         <CustomCursor />
         <CollectorTopBar />
         <VerticalChapterIndex />
+        <TheCabinet />
 
         {/* Gentle Seal Earned Toast */}
         {activeToast && (
@@ -135,26 +138,42 @@ function CollectorContainer() {
           {/* FRONTISPIECE / CHAPTER 0 */}
           <Level0TitleScreen />
 
+          <ChapterCurtainDivider numeral="I" label="ORIGINS & BPIT MATRICULATION" />
+
           {/* CHAPTER I: ORIGINS (2022) */}
           <Level1Origins />
+
+          <ChapterCurtainDivider numeral="II" label="THE GRIND & RESILIENCE" />
 
           {/* CHAPTER II: THE GRIND */}
           <Level2TheGrind />
 
+          <ChapterCurtainDivider numeral="III" label="TOURPHIN & FIRST ARCHITECTURE" />
+
           {/* CHAPTER III: FIRST BUILD &bull; TOURPHIN */}
           <Level3FirstBuild />
+
+          <ChapterCurtainDivider numeral="IV" label="THE PODIUM & CRACK-A-CODE 3.0" />
 
           {/* CHAPTER IV: THE PODIUM &bull; CRACK-A-CODE 3.0 */}
           <Level4BossFight />
 
+          <ChapterCurtainDivider numeral="V" label="CLAVIS & STARTUP MAGNUM OPUS" />
+
           {/* CHAPTER V: CLAVIS &bull; THE STARTUP MAGNUM OPUS */}
           <Level5Clavis />
+
+          <ChapterCurtainDivider numeral="VI" label="THE REAL WORLD & HUDLE TELEMETRY" />
 
           {/* CHAPTER VI: THE REAL WORLD &bull; HUDLE */}
           <Level6RealWorld />
 
+          <ChapterCurtainDivider numeral="VII" label="THE TOOLKIT & CATALOGUE" />
+
           {/* CHAPTER VII: THE TOOLKIT */}
           <Level7Inventory />
+
+          <ChapterCurtainDivider numeral="VIII" label="THE LAST PAGE & CERTIFICATE" />
 
           {/* CHAPTER VIII: THE LAST PAGE &bull; CERTIFICATE OF PASSAGE */}
           <Level8Player2 />
