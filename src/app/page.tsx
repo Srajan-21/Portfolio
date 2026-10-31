@@ -8,6 +8,7 @@ import { RetroTaskbar } from "@/components/layout/RetroTaskbar";
 import { PlayableMascot } from "@/components/mascot/PlayableMascot";
 import { SplashScreen } from "@/components/ui/SplashScreen";
 import { HeroStickerWorld } from "@/components/hero/HeroStickerWorld";
+import { WindingScrollPath } from "@/components/layout/WindingScrollPath";
 
 // Progressive chapter components (to be overhauled in P3-P6)
 import { Level1Origins } from "@/components/levels/Level1Origins";
@@ -115,6 +116,9 @@ function StickerWorldContainer() {
         <RetroTaskbar />
 
         <main className="relative z-10 mx-auto w-full">
+          {/* BACKGROUND WINDING ROAD & MILESTONE PATH */}
+          <WindingScrollPath />
+
           {/* LEVEL 0: HERO STICKER WORLD & PHYSICS DESK */}
           <HeroStickerWorld />
 

@@ -173,3 +173,4 @@ CREATE POLICY "Admin write ai_facts" ON ai_facts FOR ALL USING (true) WITH CHECK
 
 DROP POLICY IF EXISTS "Admin write media_assets" ON media_assets;
 CREATE POLICY "Admin write media_assets" ON media_assets FOR ALL USING (true) WITH CHECK (true);
+

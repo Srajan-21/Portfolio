@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { StickerLevel, TradingCard, Quest } from "@/types/database";
 import { supabase } from "@/lib/supabase/client";
+import { SEED_CARDS } from "@/lib/supabase/seed-data";
 
 export function calculateLevel(stickers: number): StickerLevel {
   if (stickers >= 30) return "Legend";
@@ -29,12 +30,13 @@ export interface StickerWorldContextType {
   level: StickerLevel;
   collectedStickerIds: string[];
   collectSticker: (id: string, amount?: number, label?: string) => boolean;
+  addStickers: (amount: number, id?: string) => void;
   
   // Play Mode & Mascot
   isPlayMode: boolean;
   togglePlayMode: () => void;
   mascotSpeech: string | null;
-  setMascotSpeech: (text: string | null) => void;
+  setMascotSpeech: (text: string | null, durationMs?: number) => void;
 
   // OS Windows
   openWindows: string[];
@@ -46,6 +48,7 @@ export interface StickerWorldContextType {
   // Cards & Binder
   collectedCards: string[];
   collectCard: (card: TradingCard) => void;
+  unlockCard: (cardId: string) => void;
   activeCardPack: TradingCard | null;
   setActiveCardPack: (card: TradingCard | null) => void;
 
@@ -152,6 +155,14 @@ export function StickerWorldProvider({ children }: { children: React.ReactNode }
     [collectedStickerIds, stickers, triggerToast]
   );
 
+  const addStickers = useCallback(
+    (amount: number, id?: string) => {
+      const stickerId = id || `custom_stk_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      collectSticker(stickerId, amount);
+    },
+    [collectSticker]
+  );
+
   // Complete a quest
   const completeQuest = useCallback(
     (questId: string) => {
@@ -185,6 +196,25 @@ export function StickerWorldProvider({ children }: { children: React.ReactNode }
     },
     [collectedCards]
   );
+
+  const unlockCard = useCallback(
+    (cardId: string) => {
+      const card = SEED_CARDS.find((c) => c.id === cardId);
+      if (card) {
+        collectCard(card);
+      }
+    },
+    [collectCard]
+  );
+
+  const setMascotSpeechWithDuration = useCallback((text: string | null, durationMs?: number) => {
+    setMascotSpeech(text);
+    if (text && durationMs) {
+      setTimeout(() => {
+        setMascotSpeech((current) => (current === text ? null : current));
+      }, durationMs);
+    }
+  }, []);
 
   // Play Mode toggle
   const togglePlayMode = useCallback(() => {
@@ -262,10 +292,11 @@ export function StickerWorldProvider({ children }: { children: React.ReactNode }
         level,
         collectedStickerIds,
         collectSticker,
+        addStickers,
         isPlayMode,
         togglePlayMode,
         mascotSpeech,
-        setMascotSpeech,
+        setMascotSpeech: setMascotSpeechWithDuration,
         openWindows,
         activeWindow,
         openWindow,
@@ -273,6 +304,7 @@ export function StickerWorldProvider({ children }: { children: React.ReactNode }
         bringToFront,
         collectedCards,
         collectCard,
+        unlockCard,
         activeCardPack,
         setActiveCardPack,
         quests: INITIAL_QUESTS,

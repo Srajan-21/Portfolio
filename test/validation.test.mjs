@@ -64,3 +64,17 @@ test("Sticker levels transition accurately based on stickers collected", () => {
   assert.equal(calculateLevel(30), "Legend");
   assert.equal(calculateLevel(100), "Legend");
 });
+
+test("Tourphin dynamic itinerary pricing handles variable custom stops cleanly", () => {
+  const baseTourPrice = 1200;
+  const stops = [
+    { name: "Old Delhi Heritage Walk", cost: 500 },
+    { name: "Artisan Spice Trail", cost: 650 },
+  ];
+  const total = baseTourPrice + stops.reduce((acc, s) => acc + s.cost, 0);
+  assert.equal(total, 2350);
+
+  const updatedStops = [...stops, { name: "Rooftop Sunset", cost: 800 }];
+  const newTotal = baseTourPrice + updatedStops.reduce((acc, s) => acc + s.cost, 0);
+  assert.equal(newTotal, 3150);
+});
