@@ -6,6 +6,7 @@ import { PaperNoise } from "@/components/layout/PaperNoise";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { CollectorTopBar } from "@/components/layout/CollectorTopBar";
 import { VerticalChapterIndex } from "@/components/layout/VerticalChapterIndex";
+import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { SplashScreen } from "@/components/ui/SplashScreen";
 import { Level0TitleScreen } from "@/components/levels/Level0TitleScreen";
 import { Level1Origins } from "@/components/levels/Level1Origins";
@@ -103,64 +104,66 @@ function CollectorContainer() {
   }, [unlockSeal]);
 
   return (
-    <div className="relative min-h-screen bg-[#F6F1E7] text-[#14110F] selection:bg-[#6B1E1E] selection:text-[#F6F1E7]">
-      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-      <PaperNoise />
-      <CustomCursor />
-      <CollectorTopBar />
-      <VerticalChapterIndex />
+    <SmoothScroll>
+      <div className="relative min-h-screen bg-[#F6F1E7] text-[#14110F] selection:bg-[#6B1E1E] selection:text-[#F6F1E7]">
+        {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+        <PaperNoise />
+        <CustomCursor />
+        <CollectorTopBar />
+        <VerticalChapterIndex />
 
-      {/* Gentle Seal Earned Toast */}
-      {activeToast && (
-        <div className="fixed bottom-8 right-8 z-50 animate-fade-in">
-          <div className="flex items-center gap-3 rounded border border-[#B08D57]/40 bg-[#FAF7F2] p-4 shadow-plinth">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#B08D57] bg-[#EDE5D3] text-[#8C6B3A] font-display font-semibold text-sm">
-              {activeToast.numeral}
-            </div>
-            <div>
-              <span className="block font-mono text-[9px] uppercase tracking-[0.2em] text-[#8C6B3A]">
-                SEAL CONFERRED
-              </span>
-              <span className="font-display text-base font-light text-[#14110F]">
-                {activeToast.title}
-              </span>
+        {/* Gentle Seal Earned Toast */}
+        {activeToast && (
+          <div className="fixed bottom-8 right-8 z-50 animate-fade-in">
+            <div className="flex items-center gap-3 rounded border border-[#B08D57]/40 bg-[#FAF7F2] p-4 shadow-plinth">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#B08D57] bg-[#EDE5D3] text-[#8C6B3A] font-display font-semibold text-sm">
+                {activeToast.numeral}
+              </div>
+              <div>
+                <span className="block font-mono text-[9px] uppercase tracking-[0.2em] text-[#8C6B3A]">
+                  SEAL CONFERRED
+                </span>
+                <span className="font-display text-base font-light text-[#14110F]">
+                  {activeToast.title}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <main className="relative z-10 mx-auto w-full lg:pl-16">
-        {/* FRONTISPIECE / CHAPTER 0 */}
-        <Level0TitleScreen />
+        <main className="relative z-10 mx-auto w-full lg:pl-16">
+          {/* FRONTISPIECE / CHAPTER 0 */}
+          <Level0TitleScreen />
 
-        {/* CHAPTER I: ORIGINS (2022) */}
-        <Level1Origins />
+          {/* CHAPTER I: ORIGINS (2022) */}
+          <Level1Origins />
 
-        {/* CHAPTER II: THE GRIND */}
-        <Level2TheGrind />
+          {/* CHAPTER II: THE GRIND */}
+          <Level2TheGrind />
 
-        {/* CHAPTER III: FIRST BUILD &bull; TOURPHIN */}
-        <Level3FirstBuild />
+          {/* CHAPTER III: FIRST BUILD &bull; TOURPHIN */}
+          <Level3FirstBuild />
 
-        {/* CHAPTER IV: THE PODIUM &bull; CRACK-A-CODE 3.0 */}
-        <Level4BossFight />
+          {/* CHAPTER IV: THE PODIUM &bull; CRACK-A-CODE 3.0 */}
+          <Level4BossFight />
 
-        {/* CHAPTER V: CLAVIS &bull; THE STARTUP MAGNUM OPUS */}
-        <Level5Clavis />
+          {/* CHAPTER V: CLAVIS &bull; THE STARTUP MAGNUM OPUS */}
+          <Level5Clavis />
 
-        {/* CHAPTER VI: THE REAL WORLD &bull; HUDLE */}
-        <Level6RealWorld />
+          {/* CHAPTER VI: THE REAL WORLD &bull; HUDLE */}
+          <Level6RealWorld />
 
-        {/* CHAPTER VII: THE TOOLKIT */}
-        <Level7Inventory />
+          {/* CHAPTER VII: THE TOOLKIT */}
+          <Level7Inventory />
 
-        {/* CHAPTER VIII: THE LAST PAGE &bull; CERTIFICATE OF PASSAGE */}
-        <Level8Player2 />
-      </main>
+          {/* CHAPTER VIII: THE LAST PAGE &bull; CERTIFICATE OF PASSAGE */}
+          <Level8Player2 />
+        </main>
 
-      {/* Archival Assistant */}
-      <AskSrajanChat />
-    </div>
+        {/* Archival Assistant */}
+        <AskSrajanChat />
+      </div>
+    </SmoothScroll>
   );
 }
 
