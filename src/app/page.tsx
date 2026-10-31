@@ -1,14 +1,33 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { JournalProvider, useJournal } from "@/context/JournalContext";
 import { PaperNoise } from "@/components/layout/PaperNoise";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { HUD } from "@/components/layout/HUD";
 import { Level0TitleScreen } from "@/components/levels/Level0TitleScreen";
+import { SplashScreen } from "@/components/ui/SplashScreen";
 
 function JournalContainer() {
   const { currentLevel, setLevel, unlockEasterEgg } = useJournal();
+  const [showSplash, setShowSplash] = useState<boolean>(true);
+
+  // Check if splash was already viewed in this browser session
+  useEffect(() => {
+    try {
+      const seen = sessionStorage.getItem("srajan_splash_seen");
+      if (seen === "true") {
+        setShowSplash(false);
+      }
+    } catch {}
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+    try {
+      sessionStorage.setItem("srajan_splash_seen", "true");
+    } catch {}
+  };
 
   // Scroll spy to update active level in HUD
   useEffect(() => {
@@ -75,6 +94,7 @@ function JournalContainer() {
 
   return (
     <div className="relative min-h-screen bg-[#F2EBDD] text-[#1B1A17] transition-colors duration-300 dark:bg-[#181512] dark:text-[#EBE3D3]">
+      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
       <PaperNoise />
       <CustomCursor />
       <HUD />
