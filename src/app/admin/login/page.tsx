@@ -55,102 +55,92 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F2EBDD] p-4 font-serif text-[#1B1A17] selection:bg-[#D9432B] selection:text-[#F2EBDD] dark:bg-[#181512] dark:text-[#EBE3D3]">
-      <div className="paper-grain pointer-events-none fixed inset-0 opacity-20" />
-
-      {/* Editor's Desk Dossier Card */}
-      <div className="relative z-10 w-full max-w-md rounded border-2 border-[#1B1A17] bg-[#FBF8F1] p-6 shadow-[6px_6px_0px_0px_#1B1A17] sm:p-8 dark:border-[#EBE3D3] dark:bg-[#24201A] dark:shadow-[6px_6px_0px_0px_#EBE3D3]">
-        {/* Top Confidential Stamp */}
-        <div className="mb-4 flex items-center justify-between border-b border-[#D3C4A5] pb-3 font-mono text-[11px] uppercase tracking-wider text-[#837B6D] dark:border-[#3A3328] dark:text-[#7E7565]">
-          <span>JOURNAL // EDITORS DESK</span>
-          <span className="font-bold text-[#D9432B] dark:text-[#E55840]">RESTRICTED</span>
+    <div className="flex min-h-screen items-center justify-center bg-[#F6F1E7] p-6 text-[#14110F]">
+      <div className="w-full max-w-md rounded border border-[#6F665A]/25 bg-[#FAF7F2] p-8 shadow-sm">
+        {/* Top Restricted Tag */}
+        <div className="mb-4 flex items-center justify-between border-b border-[#6F665A]/15 pb-3 font-mono text-[10px] uppercase tracking-wider text-[#6F665A]">
+          <span>MONOGRAPH // CURATOR ACCESS</span>
+          <span className="font-semibold text-[#8C6B3A]">RESTRICTED</span>
         </div>
 
-        <h1 className="font-display text-2xl font-black uppercase tracking-tight text-[#1B1A17] sm:text-3xl dark:text-[#EBE3D3]">
-          Editor Access
+        <h1 className="font-display text-2xl sm:text-3xl font-light text-[#14110F]">
+          Curator Portal
         </h1>
-        <p className="mt-1 font-serif text-sm italic text-[#4B463E] dark:text-[#B2A896]">
-          Sign in to modify timeline chapters, manage live projects, moderate guestbook notes, and upload fresh resumes.
+        <p className="mt-1 font-serif text-sm text-[#6F665A]">
+          Sign in to manage the resume dossier, update teammate profiles, and moderate guestbook entries.
         </p>
 
-        {/* Error / Success Alerts */}
+        {/* Alerts */}
         {errorMsg && (
-          <div className="mt-4 flex items-center gap-2 rounded border border-[#D9432B] bg-[#D9432B]/10 p-3 font-mono text-xs text-[#D9432B]">
+          <div className="mt-4 flex items-center gap-2 rounded border border-[#6B1E1E]/30 bg-[#6B1E1E]/5 p-3 font-mono text-xs text-[#6B1E1E]">
             <ShieldAlert className="h-4 w-4 shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
         {successMsg && (
-          <div className="mt-4 flex items-center gap-2 rounded border border-[#7A8B6F] bg-[#7A8B6F]/10 p-3 font-mono text-xs text-[#7A8B6F] dark:text-[#92A585]">
+          <div className="mt-4 flex items-center gap-2 rounded border border-[#B08D57]/40 bg-[#EDE5D3]/40 p-3 font-mono text-xs text-[#8C6B3A]">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>{successMsg}</span>
           </div>
         )}
 
-        <form onSubmit={handleSignIn} className="mt-6 space-y-4">
+        <form onSubmit={handleSignIn} className="mt-6 space-y-4 font-mono text-xs">
           <div>
-            <label className="block font-mono text-xs font-bold uppercase tracking-wider text-[#1B1A17] dark:text-[#EBE3D3]">
+            <label className="block font-medium text-[#14110F] text-[11px] uppercase tracking-wider">
               Admin Email
             </label>
             <div className="relative mt-1">
-              <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#837B6D]" />
+              <Mail className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6F665A]" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="srivasrajan8@gmail.com"
-                className="w-full rounded border border-[#1B1A17] bg-[#F2EBDD] py-2 pl-9 pr-3 font-mono text-sm text-[#1B1A17] focus:border-[#D9432B] focus:outline-none dark:border-[#EBE3D3] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                className="w-full rounded border border-[#6F665A]/20 bg-[#F6F1E7] py-2.5 pl-9 pr-3 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
               />
             </div>
           </div>
 
           {!isMagicLink && (
             <div>
-              <label className="block font-mono text-xs font-bold uppercase tracking-wider text-[#1B1A17] dark:text-[#EBE3D3]">
+              <label className="block font-medium text-[#14110F] text-[11px] uppercase tracking-wider">
                 Password
               </label>
               <div className="relative mt-1">
-                <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#837B6D]" />
+                <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6F665A]" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full rounded border border-[#1B1A17] bg-[#F2EBDD] py-2 pl-9 pr-3 font-mono text-sm text-[#1B1A17] focus:border-[#D9432B] focus:outline-none dark:border-[#EBE3D3] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                  className="w-full rounded border border-[#6F665A]/20 bg-[#F6F1E7] py-2.5 pl-9 pr-3 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
                 />
               </div>
             </div>
           )}
 
-          <div className="flex items-center justify-between text-xs font-mono">
+          <div className="flex items-center justify-between pt-1">
             <button
               type="button"
               onClick={() => setIsMagicLink(!isMagicLink)}
-              className="text-[#D9432B] underline hover:opacity-80 dark:text-[#E55840]"
+              className="text-[10px] text-[#6F665A] hover:underline"
             >
-              {isMagicLink ? "Use Password Instead" : "Send Magic Link via Email"}
+              {isMagicLink ? "Switch to password sign in" : "Sign in via magic link"}
             </button>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded border-2 border-[#1B1A17] bg-[#D9432B] py-3 font-mono text-xs font-black uppercase tracking-widest text-[#F2EBDD] shadow-[3px_3px_0px_0px_#1B1A17] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_#1B1A17] disabled:opacity-60 dark:border-[#EBE3D3] dark:shadow-[3px_3px_0px_0px_#EBE3D3]"
+            className="flex w-full items-center justify-center gap-2 rounded border border-[#B08D57] bg-[#EDE5D3] py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:bg-[#FAF7F2] transition-colors disabled:opacity-50"
           >
-            <span>{loading ? "Authenticating..." : isMagicLink ? "Dispatch Magic Link" : "Unlock Desk"}</span>
-            <ArrowRight className="h-4 w-4" />
+            <span>{loading ? "Authenticating..." : isMagicLink ? "Send Magic Link" : "Sign In to Desk"}</span>
+            <ArrowRight className="h-3.5 w-3.5 text-[#B08D57]" />
           </button>
         </form>
-
-        <div className="mt-6 border-t border-[#D3C4A5] pt-3 text-center font-mono text-[10px] text-[#837B6D] dark:border-[#3A3328] dark:text-[#7E7565]">
-          <a href="/" className="hover:text-[#1B1A17] underline dark:hover:text-[#EBE3D3]">
-            &larr; Return to Journal Front Cover
-          </a>
-        </div>
       </div>
     </div>
   );
 }
-

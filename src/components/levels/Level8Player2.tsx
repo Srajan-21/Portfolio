@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useCollector } from "@/context/CollectorContext";
 import { InkDoodleCanvas } from "@/components/canvas/InkDoodleCanvas";
+import { CertificateOfPassage } from "@/components/certificate/CertificateOfPassage";
+import { GoldMedallion } from "@/components/seals/GoldMedallion";
+import { LineMaskReveal } from "@/components/motion/LineMaskReveal";
 import { supabase } from "@/lib/supabase/client";
 import {
   Send,
@@ -13,6 +16,7 @@ import {
   AlertCircle,
   UserCheck,
   Award,
+  ChevronRight,
 } from "lucide-react";
 
 interface GuestEntry {
@@ -169,16 +173,18 @@ export function Level8Player2() {
 
         {/* Chapter Title */}
         <div className="mb-14">
-          <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#14110F]">
-            The Last <span className="italic font-serif text-[#6B1E1E]">Page</span>
-          </h2>
+          <LineMaskReveal threshold={0.1}>
+            <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#14110F]">
+              The Last <span className="italic font-serif text-[#6B1E1E]">Page</span>
+            </h2>
+          </LineMaskReveal>
           <p className="mt-4 max-w-2xl font-serif text-lg font-light text-[#6F665A] leading-relaxed">
             You have reached the close of this edition. Sign the archival ledger, transmit an inquiry, or download the verified resume dossier below.
           </p>
         </div>
 
         {/* Career Dossier & Resume Action Card */}
-        <div className="mb-14 rounded border-hairline bg-[#FAF7F2] p-8 shadow-editorial">
+        <div className="mb-14 rounded border border-[#6F665A]/20 bg-[#FAF7F2] p-8 shadow-sm">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
               <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#8C6B3A] font-semibold">
@@ -207,7 +213,7 @@ export function Level8Player2() {
 
               <a
                 href="mailto:srivasrajan8@gmail.com"
-                className="flex items-center gap-2 rounded border border-hairline bg-[#F6F1E7] px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] transition-colors"
+                className="flex items-center gap-2 rounded border border-[#6F665A]/20 bg-[#F6F1E7] px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] transition-colors"
               >
                 <Mail className="h-3.5 w-3.5 text-[#B08D57]" />
                 <span>Email Directly</span>
@@ -217,49 +223,41 @@ export function Level8Player2() {
         </div>
 
         {/* Certificate of Passage Finale */}
-        <div className="mb-16 rounded border-2 border-[#B08D57]/40 bg-[#FAF7F2] p-8 sm:p-12 shadow-plinth text-center">
-          <div className="inline-flex items-center justify-center rounded-full border border-[#B08D57]/40 p-2 text-[#8C6B3A] mb-4">
-            <Award className="h-6 w-6" />
-          </div>
+        <div className="mb-16">
+          <CertificateOfPassage
+            recipientName={certificateName}
+            onNameChange={setCertificateName}
+            rank={rank}
+            sealsEarnedCount={sealsEarned.length}
+            dateStamp={dateStamp}
+          />
+        </div>
 
-          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#8C6B3A] font-semibold">
-            CERTIFICATE OF PASSAGE &bull; THE COLLECTOR&apos;S EDITION
-          </div>
-
-          <h4 className="font-display text-3xl sm:text-4xl font-light text-[#14110F] mt-3">
-            This Certifies That
-          </h4>
-
-          <div className="my-4 max-w-sm mx-auto">
-            <input
-              type="text"
-              value={certificateName}
-              onChange={(e) => setCertificateName(e.target.value)}
-              className="w-full text-center font-display text-2xl sm:text-3xl font-normal italic text-[#6B1E1E] bg-transparent border-b border-[#B08D57]/40 focus:outline-none focus:border-[#B08D57]"
-              placeholder="Your Name"
+        {/* SEAL VIII CONFERMENT CARD */}
+        <div className="mb-16 rounded border border-[#B08D57]/40 bg-[#FAF7F2] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
+          <div className="flex items-center gap-5">
+            <GoldMedallion
+              numeral="VIII"
+              title="The Conferrer"
+              isUnlocked={sealsEarned.includes("seal_last_page")}
+              size="lg"
             />
-          </div>
-
-          <p className="font-serif text-sm text-[#6F665A] max-w-md mx-auto">
-            Has traversed the chapters of Srajan Srivastava&apos;s monograph from BPIT Delhi (2022) to production at Hudle.
-          </p>
-
-          <div className="mt-8 flex flex-wrap justify-center items-center gap-6 font-mono text-xs text-[#6F665A] border-t-hairline pt-6">
             <div>
-              <span className="block text-[9px] uppercase tracking-wider text-[#6F665A]/70">CONFERRED RANK</span>
-              <span className="font-medium text-[#14110F]">{rank}</span>
-            </div>
-            <span className="text-[#6F665A]/30">&bull;</span>
-            <div>
-              <span className="block text-[9px] uppercase tracking-wider text-[#6F665A]/70">SEALS ACCREDITED</span>
-              <span className="font-medium text-[#14110F]">{sealsEarned.length} of 12</span>
-            </div>
-            <span className="text-[#6F665A]/30">&bull;</span>
-            <div>
-              <span className="block text-[9px] uppercase tracking-wider text-[#6F665A]/70">DATE STAMP</span>
-              <span className="font-medium text-[#14110F]">{dateStamp}</span>
+              <span className="block font-mono text-[10px] uppercase tracking-[0.22em] text-[#8C6B3A]">
+                CHAPTER VIII SEAL &bull; THE CONFERRER
+              </span>
+              <h4 className="font-display text-xl font-medium text-[#14110F]">
+                The Colophon &amp; Passage
+              </h4>
+              <p className="font-serif text-xs text-[#6F665A] mt-1">
+                Conferred upon reaching the final folio of Srajan Srivastava&apos;s monograph.
+              </p>
             </div>
           </div>
+
+          <span className="font-mono text-[10px] uppercase tracking-widest text-[#8C6B3A] border border-[#B08D57]/40 px-3 py-1 rounded bg-[#EDE5D3]/40">
+            Recorded in Archives
+          </span>
         </div>
 
         {/* Two Columns: Guestbook & Contact */}

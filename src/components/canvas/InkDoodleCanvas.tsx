@@ -24,8 +24,8 @@ export function InkDoodleCanvas({ onDoodleChange }: InkDoodleCanvasProps) {
     canvas.height = 120 * dpr;
     ctx.scale(dpr, dpr);
 
-    ctx.strokeStyle = "#1B1A17";
-    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = "#14110F";
+    ctx.lineWidth = 2.0;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
   }, []);
@@ -85,16 +85,16 @@ export function InkDoodleCanvas({ onDoodleChange }: InkDoodleCanvasProps) {
 
   return (
     <div className="space-y-1.5 font-mono text-xs">
-      <div className="flex items-center justify-between text-[11px] text-[#837B6D] dark:text-[#7E7565]">
-        <div className="flex items-center gap-1 font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-          <PenTool className="h-3.5 w-3.5 text-[#D9432B]" />
-          <span>DRAW INK DOODLE / INITIALS (OPTIONAL)</span>
+      <div className="flex items-center justify-between text-[10px] text-[#6F665A]">
+        <div className="flex items-center gap-1.5 font-semibold text-[#14110F]">
+          <PenTool className="h-3.5 w-3.5 text-[#B08D57]" />
+          <span>CALLIGRAPHIC INITIALS / CIPHER (OPTIONAL)</span>
         </div>
         {hasDrawn && (
           <button
             type="button"
             onClick={clearCanvas}
-            className="flex items-center gap-1 text-[#D9432B] hover:underline"
+            className="flex items-center gap-1 text-[#6B1E1E] hover:underline"
           >
             <Eraser className="h-3 w-3" />
             <span>Clear</span>
@@ -102,10 +102,9 @@ export function InkDoodleCanvas({ onDoodleChange }: InkDoodleCanvasProps) {
         )}
       </div>
 
-      <div className="relative rounded border border-dashed border-[#1B1A17] bg-[#F2EBDD] dark:border-[#EBE3D3] dark:bg-[#181512]">
+      <div className="relative rounded border border-[#6F665A]/20 bg-[#F6F1E7] p-1">
         <canvas
           ref={canvasRef}
-          style={{ width: "280px", height: "120px" }}
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
@@ -113,15 +112,15 @@ export function InkDoodleCanvas({ onDoodleChange }: InkDoodleCanvasProps) {
           onTouchStart={startDrawing}
           onTouchMove={draw}
           onTouchEnd={stopDrawing}
-          className="cursor-crosshair touch-none"
+          className="h-[100px] w-full cursor-crosshair touch-none rounded bg-[#FAF7F2]"
+          style={{ width: "100%", height: "100px" }}
         />
         {!hasDrawn && (
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center font-hand text-sm text-[#837B6D]/70">
-            Draw a sketch, signature, or stamp here...
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center font-serif text-xs italic text-[#6F665A]/50">
+            Sign or sketch your initial cipher here...
           </div>
         )}
       </div>
     </div>
   );
 }
-
