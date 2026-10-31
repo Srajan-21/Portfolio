@@ -6,6 +6,18 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
+export interface Chapter {
+  id: string;
+  chapter_num: number;
+  title: string;
+  theme_color: string;
+  tagline: string | null;
+  story_text: string;
+  hero_metric: string | null;
+  sort_order: number;
+  published: boolean;
+}
+
 export interface TimelineEvent {
   id: string;
   level: number;
@@ -77,21 +89,55 @@ export interface TradingCard {
   title: string;
   subtitle: string;
   rarity: CardRarity;
-  category: "project" | "achievement" | "origin" | "secret";
+  category: "project" | "achievement" | "origin" | "role" | "secret";
   description: string;
   stats: Record<string, string | number>;
   artwork_icon?: string;
   artwork_url?: string | null;
   flavor_text?: string;
+  sort_order?: number;
+  published?: boolean;
 }
 
 export interface Quest {
   id: string;
   title: string;
   description: string;
+  condition_type?: string;
   reward_stickers: number;
   completed?: boolean;
   isSecret?: boolean;
+  is_secret?: boolean;
+  sort_order?: number;
+}
+
+export interface Teammate {
+  id: string;
+  name: string;
+  role: string;
+  project_slug: string;
+  linkedin_url: string | null;
+  avatar_url?: string | null;
+  sort_order: number;
+}
+
+export interface AIFact {
+  id: string;
+  category: "education" | "experience" | "projects" | "personal" | "skills";
+  fact: string;
+  keywords: string[];
+  sort_order: number;
+  published: boolean;
+}
+
+export interface MediaAsset {
+  id: string;
+  chapter_num: number | null;
+  title: string;
+  file_url: string;
+  media_type: "image" | "video";
+  caption: string | null;
+  sort_order: number;
 }
 
 export interface SiteSettings {
