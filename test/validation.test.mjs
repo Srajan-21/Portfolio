@@ -47,3 +47,19 @@ test("Satiety meal prediction formula prevents zero or negative values", () => {
   assert.ok(portion2 > portion1);
 });
 
+test("Collector ranks transition accurately based on seals count", () => {
+  const calculateRank = (sealCount) => {
+    if (sealCount >= 12) return "Master";
+    if (sealCount >= 8) return "Artisan";
+    if (sealCount >= 4) return "Journeyman";
+    return "Apprentice";
+  };
+
+  assert.equal(calculateRank(0), "Apprentice");
+  assert.equal(calculateRank(3), "Apprentice");
+  assert.equal(calculateRank(4), "Journeyman");
+  assert.equal(calculateRank(7), "Journeyman");
+  assert.equal(calculateRank(8), "Artisan");
+  assert.equal(calculateRank(11), "Artisan");
+  assert.equal(calculateRank(12), "Master");
+});

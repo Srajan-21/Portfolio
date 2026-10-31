@@ -1,189 +1,92 @@
 "use client";
 
-import React, { useState } from "react";
-import { useJournal } from "@/context/JournalContext";
-import { ArrowDown, Sparkles, Scissors } from "lucide-react";
+import React from "react";
+import { useCollector } from "@/context/CollectorContext";
+import { ArrowDown, Sparkles } from "lucide-react";
 
 export function Level0TitleScreen() {
-  const { isCoverTorn, tearCover, addXP } = useJournal();
-  const [isTearing, setIsTearing] = useState(false);
+  const { setActiveChapter, setCursorLabel } = useCollector();
 
-  const handleStart = () => {
-    if (isCoverTorn) {
-      document.getElementById("level-1")?.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
-    setIsTearing(true);
-    tearCover();
-    addXP(50, "COVER SEAL BROKEN // EXPEDITION COMMENCED");
-
-    setTimeout(() => {
-      document.getElementById("level-1")?.scrollIntoView({ behavior: "smooth" });
-    }, 650);
+  const handleOpenArchive = () => {
+    setActiveChapter(1);
+    document.getElementById("chapter-1")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <section
-      id="level-0"
-      className="relative min-h-[92vh] w-full overflow-hidden border-b-2 border-dashed border-[#D3C4A5] bg-[#F2EBDD] py-12 px-4 transition-colors duration-300 sm:px-8 md:py-20 dark:border-[#3A3328] dark:bg-[#181512]"
+      id="chapter-0"
+      className="relative min-h-[92vh] w-full overflow-hidden border-b-hairline bg-[#F6F1E7] py-16 px-6 sm:px-12 md:py-28"
     >
-      {/* Decorative Washi Tape at Top Left */}
-      <div
-        aria-hidden="true"
-        className="absolute -top-3 left-10 z-10 h-8 w-32 -rotate-3 bg-[#E4D7C2]/80 shadow-sm backdrop-blur-[1px] dark:bg-[#3A3328]/60"
-        style={{
-          clipPath:
-            "polygon(0% 10%, 5% 0%, 95% 0%, 100% 10%, 96% 100%, 5% 95%, 0% 100%)",
-        }}
-      />
-
-      {/* Decorative Washi Tape at Top Right */}
-      <div
-        aria-hidden="true"
-        className="absolute -top-2 right-12 z-10 h-8 w-28 rotate-6 bg-[#C99A3B]/40 shadow-sm dark:bg-[#DEB459]/20"
-        style={{
-          clipPath:
-            "polygon(0% 0%, 95% 5%, 100% 90%, 95% 100%, 5% 95%, 0% 85%)",
-        }}
-      />
-
-      {/* Coffee Cup Ring Watermark in Background */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-8 right-6 z-0 h-48 w-48 rounded-full border-4 border-[#C99A3B]/20 mix-blend-multiply sm:h-64 sm:w-64 dark:border-[#DEB459]/10"
-        style={{
-          boxShadow:
-            "inset 0 0 16px rgba(201, 154, 59, 0.15), 0 0 12px rgba(201, 154, 59, 0.1)",
-        }}
-      />
-
-      <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center justify-between text-center">
-        {/* Editorial Journal Masthead Header */}
-        <div className="mb-6 flex w-full flex-wrap items-center justify-between border-b border-[#D3C4A5] pb-4 font-mono text-[11px] uppercase tracking-wider text-[#837B6D] dark:border-[#3A3328] dark:text-[#7E7565]">
+      <div className="mx-auto max-w-5xl flex flex-col justify-between min-h-[75vh]">
+        {/* Top Archival Header Bar */}
+        <div className="flex flex-wrap items-baseline justify-between border-b-hairline pb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F665A]">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-[#D9432B] dark:text-[#E55840]">
-              [VOL. 01]
-            </span>
-            <span>EDITION: OCTOBER 2026</span>
+            <span className="text-[#8C6B3A] font-semibold">VOLUME I</span>
+            <span>&bull;</span>
+            <span>MMXXII &ndash; MMXXVI</span>
           </div>
-          <div className="hidden sm:block">
-            RECORD TYPE: FULL STACK ENGINEERING DOSSIER
-          </div>
-          <div className="flex items-center gap-1.5 text-[#1B1A17] dark:text-[#EBE3D3]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#7A8B6F]" />
-            <span>NEW DELHI // 28.6139° N</span>
+          <span className="hidden sm:inline">
+            FOLIO: SOFTWARE DEVELOPER &bull; ARCHIVAL MONOGRAPH
+          </span>
+          <div className="flex items-center gap-1.5 text-[#14110F]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#B08D57]" />
+            <span>NEW DELHI [28.6139° N, 77.2090° E]</span>
           </div>
         </div>
 
-        {/* Center Title Hero Block */}
-        <div className="my-6 w-full max-w-4xl py-4 sm:py-8">
-          <div className="mb-3 inline-block rounded-xs border border-dashed border-[#D9432B] bg-[#D9432B]/5 px-3 py-1 font-mono text-xs font-bold uppercase tracking-widest text-[#D9432B] dark:border-[#E55840] dark:bg-[#E55840]/10 dark:text-[#E55840]">
-            LEVEL 00 // THE PLAYER&apos;S JOURNAL
+        {/* Center Title Plate */}
+        <div className="my-auto py-12 text-center">
+          {/* Subtle Small-caps Prefix */}
+          <div className="mb-4 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.25em] text-[#6F665A]">
+            <span>FRONTISPIECE</span>
+            <span className="h-[1px] w-6 bg-[#B08D57]/40" />
+            <span className="text-[#8C6B3A]">THE COLLECTOR&apos;S EDITION</span>
           </div>
 
-          {/* Giant Riso-Print Misregistered Display Name */}
-          <h1
-            data-text="SRAJAN SRIVASTAVA"
-            className="riso-title font-display text-4xl font-black uppercase tracking-tight text-[#1B1A17] sm:text-6xl md:text-8xl lg:text-[6.5rem] dark:text-[#EBE3D3]"
-          >
-            SRAJAN SRIVASTAVA
+          {/* High-Contrast Large Light Serif Name */}
+          <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-tight text-[#14110F] leading-[0.95]">
+            Srajan <span className="font-normal italic font-serif text-[#6B1E1E]">Srivastava</span>
           </h1>
 
-          <p className="mx-auto mt-4 max-w-2xl font-serif text-lg italic text-[#4B463E] sm:text-xl md:text-2xl dark:text-[#B2A896]">
-            &ldquo;An interactive field record of turning curiosity into
-            fault-tolerant code &mdash; from day zero at BPIT Delhi to production
-            at Hudle.&rdquo;
+          <p className="mx-auto mt-6 max-w-2xl font-serif text-lg sm:text-xl font-light text-[#6F665A] leading-relaxed">
+            An editorial archive charting the discipline of software engineering &mdash; from day zero at BPIT Delhi, through algorithmic trials, to the CLAVIS startup and production at Hudle.
           </p>
 
-          {/* Marginalia Note with Ink Arrow */}
-          <div className="relative mx-auto mt-6 max-w-md">
-            <div className="flex items-center justify-center gap-2 font-hand text-xl text-[#D9432B] sm:text-2xl dark:text-[#E55840]">
-              <span>* Field notes, battle scars, and live running machines</span>
-              <Sparkles className="h-4 w-4" />
+          {/* Delicate Archival Medallion Emblem */}
+          <div className="my-8 flex justify-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#B08D57]/40 bg-[#EDE5D3]/40 shadow-sm">
+              <span className="font-display text-2xl font-light text-[#8C6B3A] italic">
+                S&thinsp;&bull;&thinsp;S
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Tactile Stamp Badges Array */}
-        <div className="my-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6">
-          {/* Stamp 1: Education */}
-          <div
-            data-cursor="stamp"
-            className="stamp-border rotate-[-2deg] rounded-sm bg-[#FBF8F1] p-3 text-left shadow-sm transition-transform hover:rotate-0 dark:bg-[#24201A]"
-          >
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#837B6D] dark:text-[#7E7565]">
-              STAMP // 01
-            </span>
-            <div className="font-display text-sm font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-              BPIT Delhi
+        {/* Bottom Metadata & Navigation Action */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 border-t-hairline pt-6 font-mono text-[11px] text-[#6F665A]">
+          <div className="flex items-center gap-6 text-center sm:text-left">
+            <div>
+              <span className="block text-[9px] uppercase tracking-[0.2em] text-[#6F665A]/70">INSTITUTION</span>
+              <span className="font-medium text-[#14110F]">BPIT Delhi &bull; B.Tech IT</span>
             </div>
-            <div className="font-mono text-[11px] text-[#D9432B] dark:text-[#E55840]">
-              B.Tech IT (2022&ndash;2026)
+            <span className="hidden sm:inline text-[#6F665A]/30">/</span>
+            <div>
+              <span className="block text-[9px] uppercase tracking-[0.2em] text-[#6F665A]/70">PRODUCTION</span>
+              <span className="font-medium text-[#14110F]">Hudle Engineering Intern</span>
             </div>
           </div>
 
-          {/* Stamp 2: Production Experience */}
-          <div
-            data-cursor="stamp"
-            className="stamp-border rotate-[3deg] rounded-sm bg-[#FBF8F1] p-3 text-left shadow-sm transition-transform hover:rotate-0 dark:bg-[#24201A]"
-          >
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#837B6D] dark:text-[#7E7565]">
-              STAMP // 02
-            </span>
-            <div className="font-display text-sm font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-              Hudle Intern
-            </div>
-            <div className="font-mono text-[11px] text-[#7A8B6F] dark:text-[#92A585]">
-              Juspay & GoRouter Prod
-            </div>
-          </div>
-
-          {/* Stamp 3: Hackathon Winner */}
-          <div
-            data-cursor="stamp"
-            className="stamp-border col-span-2 rotate-[-1deg] rounded-sm bg-[#FBF8F1] p-3 text-left shadow-sm transition-transform hover:rotate-0 sm:col-span-1 dark:bg-[#24201A]"
-          >
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#837B6D] dark:text-[#7E7565]">
-              STAMP // 03
-            </span>
-            <div className="font-display text-sm font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-              Crack-a-Code 3.0
-            </div>
-            <div className="font-mono text-[11px] text-[#C99A3B] dark:text-[#DEB459]">
-              3rd Place (50+ Teams)
-            </div>
-          </div>
-        </div>
-
-        {/* Paper Tear / Press Start Action Button */}
-        <div className="mt-8 flex flex-col items-center gap-3">
           <button
-            onClick={handleStart}
-            data-cursor="pointer"
-            className={`group relative flex items-center gap-3 overflow-hidden rounded border-2 border-[#1B1A17] bg-[#D9432B] px-8 py-4 font-mono text-sm font-black uppercase tracking-widest text-[#F2EBDD] shadow-[4px_4px_0px_0px_#1B1A17] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_#1B1A17] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none dark:border-[#EBE3D3] dark:shadow-[4px_4px_0px_0px_#EBE3D3] ${
-              isTearing ? "scale-95 opacity-80" : ""
-            }`}
+            onClick={handleOpenArchive}
+            onMouseEnter={() => setCursorLabel("OPEN")}
+            onMouseLeave={() => setCursorLabel(null)}
+            className="group flex items-center gap-3 rounded border border-[#6F665A]/30 bg-[#EDE5D3]/60 px-6 py-2.5 uppercase tracking-[0.18em] text-[#14110F] transition-all duration-300 hover:border-[#B08D57] hover:bg-[#EDE5D3]"
           >
-            <Scissors className="h-4 w-4 -rotate-45 transition-transform group-hover:rotate-0" />
-            <span>
-              {isCoverTorn ? "RESUME EXPEDITION" : "PRESS START // TEAR JOURNAL"}
-            </span>
-            <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-1" />
+            <span className="text-[10px] font-semibold">Enter Chapter I</span>
+            <ArrowDown className="h-3.5 w-3.5 text-[#B08D57] transition-transform group-hover:translate-y-0.5" />
           </button>
-
-          <div className="flex items-center gap-2 font-hand text-base text-[#837B6D] dark:text-[#7E7565]">
-            <span>Or scroll down to unroll the manuscript</span>
-            <span className="text-[#D9432B] dark:text-[#E55840]">&darr;</span>
-          </div>
         </div>
       </div>
-
-      {/* Jagged Torn Paper Divider Edge at Bottom */}
-      <div
-        aria-hidden="true"
-        className="torn-edge-bottom absolute bottom-0 left-0 right-0 h-6 bg-[#E4D7C2] dark:bg-[#12100E]"
-      />
     </section>
   );
 }
-

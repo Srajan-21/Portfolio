@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { soundEngine } from "@/lib/sound";
 import { Eraser, PenTool } from "lucide-react";
 
 interface InkDoodleCanvasProps {
@@ -39,7 +38,6 @@ export function InkDoodleCanvas({ onDoodleChange }: InkDoodleCanvasProps) {
 
     setIsDrawing(true);
     setHasDrawn(true);
-    soundEngine.playPenScratch();
 
     const rect = canvas.getBoundingClientRect();
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
@@ -74,7 +72,6 @@ export function InkDoodleCanvas({ onDoodleChange }: InkDoodleCanvasProps) {
   };
 
   const clearCanvas = () => {
-    soundEngine.playClick();
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");

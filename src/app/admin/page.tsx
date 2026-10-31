@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import { soundEngine } from "@/lib/sound";
 import {
   FileText,
   Upload,
@@ -98,7 +97,6 @@ export default function AdminDashboardPage() {
 
   const handleUpdateResume = async (e: React.FormEvent) => {
     e.preventDefault();
-    soundEngine.playStamp();
     setResumeSuccess(false);
 
     const payload = {
@@ -117,7 +115,6 @@ export default function AdminDashboardPage() {
   };
 
   const handleUpdateAvailability = async () => {
-    soundEngine.playStamp();
     await supabase.from("site_settings").upsert({
       key: "availability",
       value: { isOpen: isAvailable, status: availabilityStatus },
@@ -125,7 +122,6 @@ export default function AdminDashboardPage() {
   };
 
   const handleSignOut = async () => {
-    soundEngine.playClick();
     await supabase.auth.signOut();
     router.push("/admin/login");
   };

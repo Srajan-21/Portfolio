@@ -1,56 +1,59 @@
 import type { Metadata } from "next";
-import { Fraunces, Newsreader, JetBrains_Mono, Caveat } from "next/font/google";
+import { Cormorant_Garamond, Newsreader, JetBrains_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
   display: "swap",
-  axes: ["SOFT", "WONK", "opsz"],
 });
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
-  display: "swap",
+  weight: ["300", "400", "500"],
   style: ["normal", "italic"],
+  display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
+  weight: ["400", "600"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Srajan Srivastava — The Player's Journal",
+  title: "Srajan Srivastava — The Collector's Edition",
   description:
-    "An interactive field journal and game world charting Srajan Srivastava's software engineering journey from day zero at BPIT Delhi to production at Hudle.",
+    "An editorial archive charting the software engineering journey of Srajan Srivastava — from BPIT Delhi (2022) to the CLAVIS startup and production at Hudle.",
   keywords: [
     "Srajan Srivastava",
     "Software Developer",
     "Full Stack Engineer",
     "Next.js",
+    "TypeScript",
     "Supabase",
-    "Portfolio",
     "New Delhi",
     "CLAVIS",
-    "Tourphin",
     "Hudle",
   ],
   authors: [{ name: "Srajan Srivastava", url: "https://github.com/Srajan-21" }],
   openGraph: {
-    title: "Srajan Srivastava — The Player's Journal",
+    title: "Srajan Srivastava — The Collector's Edition",
     description:
-      "Field journal of a software developer: BPIT Delhi, Octave Music President, Tourphin, CLAVIS startup, and production at Hudle.",
+      "Editorial monograph of a software developer: BPIT Delhi, Octave Music President, Tourphin, CLAVIS startup, and production at Hudle.",
     url: "https://srajansrivastava.com",
-    siteName: "Srajan Srivastava Portfolio",
+    siteName: "Srajan Srivastava Monograph",
     locale: "en_US",
     type: "website",
   },
@@ -77,13 +80,14 @@ const jsonLd = {
     name: "Bhagwan Parshuram Institute of Technology (BPIT Delhi)",
   },
   knowsAbout: [
-    "Full Stack Development",
+    "Full Stack Engineering",
     "Next.js",
     "TypeScript",
     "PostgreSQL",
     "Supabase",
     "Data Structures & Algorithms",
     "Payment Webhook Idempotency",
+    "System Architecture",
   ],
 };
 
@@ -95,7 +99,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${newsreader.variable} ${jetbrainsMono.variable} ${caveat.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${newsreader.variable} ${jetbrainsMono.variable} ${caveat.variable} h-full antialiased`}
     >
       <head>
         <script
@@ -103,7 +107,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-[#F2EBDD] text-[#1B1A17] font-serif selection:bg-[#D9432B] selection:text-[#F2EBDD]">
+      <body className="min-h-full flex flex-col bg-[#F6F1E7] text-[#14110F] font-serif selection:bg-[#6B1E1E] selection:text-[#F6F1E7]">
         {children}
       </body>
     </html>

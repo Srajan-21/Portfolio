@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { ADMIN_EMAIL } from "@/lib/auth";
 import { KeyRound, Mail, ArrowRight, ShieldAlert, CheckCircle2 } from "lucide-react";
-import { soundEngine } from "@/lib/sound";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -21,7 +20,6 @@ export default function AdminLoginPage() {
     setLoading(true);
     setErrorMsg(null);
     setSuccessMsg(null);
-    soundEngine.playClick();
 
     try {
       if (isMagicLink) {
@@ -46,7 +44,6 @@ export default function AdminLoginPage() {
           return;
         }
 
-        soundEngine.playStamp();
         router.push("/admin");
       }
     } catch (err: unknown) {

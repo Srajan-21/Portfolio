@@ -115,11 +115,14 @@ export interface ContactMessage {
   created_at: string;
 }
 
+export type CollectorRank = "Apprentice" | "Journeyman" | "Artisan" | "Master";
+
 export interface VisitorProgress {
   session_id: string;
-  xp: number;
+  progress_score: number;
+  seals_earned: string[];
+  rank: CollectorRank;
   levels_unlocked: number[];
   easter_eggs_found: string[];
   updated_at: string;
 }
-

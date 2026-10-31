@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { soundEngine } from "@/lib/sound";
-import { useJournal } from "@/context/JournalContext";
-import { Compass, ExternalLink, ShieldCheck, Database, CheckCircle, Plus, Trash2 } from "lucide-react";
+import { useCollector } from "@/context/CollectorContext";
+import { Compass, ExternalLink, Plus, Trash2 } from "lucide-react";
 
 interface Stop {
   id: string;
@@ -13,200 +12,181 @@ interface Stop {
 }
 
 export function Level3FirstBuild() {
-  const { addXP } = useJournal();
+  const { unlockSeal } = useCollector();
 
-  // Interactive itinerary stops
+  // Neutral curated itinerary stops (no invented specific vendor names)
   const availableStops: Stop[] = [
-    { id: "s1", name: "Old Delhi Secret Spice Trail", duration: "1.5h", cost: 450 },
-    { id: "s2", name: "Hidden Heritage Haveli Tea", duration: "1.0h", cost: 600 },
-    { id: "s3", name: "Yamuna Sunset Boat Watch", duration: "2.0h", cost: 850 },
+    { id: "s1", name: "Curated Heritage Trail", duration: "1.5h", cost: 500 },
+    { id: "s2", name: "Local Culinary Exploration", duration: "1.0h", cost: 650 },
+    { id: "s3", name: "Historic District Sunset Walk", duration: "2.0h", cost: 800 },
   ];
 
   const [itinerary, setItinerary] = useState<Stop[]>([availableStops[0]]);
 
   const addStop = (stop: Stop) => {
     if (itinerary.some((s) => s.id === stop.id)) return;
-    soundEngine.playClick();
     setItinerary((prev) => [...prev, stop]);
-    addXP(20, "TOURPHIN ITINERARY CUSTOMIZED");
+    unlockSeal("seal_tourphin");
   };
 
   const removeStop = (id: string) => {
-    soundEngine.playClick();
     setItinerary((prev) => prev.filter((s) => s.id !== id));
   };
 
-  const totalCost = itinerary.reduce((acc, s) => acc + s.cost, 1200); // 1200 base guide booking fee
+  const totalCost = itinerary.reduce((acc, s) => acc + s.cost, 1200);
 
   return (
     <section
-      id="level-3"
-      className="relative min-h-screen w-full border-b-2 border-dashed border-[#D3C4A5] bg-[#FBF8F1] py-16 px-4 transition-colors duration-300 sm:px-8 md:py-24 dark:border-[#3A3328] dark:bg-[#1B1814]"
+      id="chapter-3"
+      className="relative min-h-screen w-full border-b-hairline bg-[#FAF7F2] py-20 px-6 sm:px-12 md:py-28"
     >
-      <div className="mx-auto max-w-6xl">
-        {/* Level Header */}
-        <div className="mb-10 flex flex-wrap items-baseline justify-between border-b border-[#D3C4A5] pb-4 font-mono text-xs uppercase tracking-wider text-[#837B6D] dark:border-[#3A3328] dark:text-[#7E7565]">
+      <div className="mx-auto max-w-5xl">
+        {/* Chapter Header */}
+        <div className="mb-12 flex flex-wrap items-baseline justify-between border-b-hairline pb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F665A]">
           <div className="flex items-center gap-2">
-            <span className="rounded bg-[#D9432B] px-2 py-0.5 font-bold text-white">
-              LEVEL 03
-            </span>
+            <span className="text-[#8C6B3A] font-semibold">CHAPTER III</span>
+            <span>&bull;</span>
             <span>FIRST ARCHITECTURAL BUILD // 2023 &ndash; 2024</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#7A8B6F] animate-pulse" />
-            <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">TOURPHIN PLATFORM</span>
-          </div>
+          <span>SMART INDIA HACKATHON &bull; TOURPHIN</span>
         </div>
 
-        {/* Level Title */}
-        <div className="mb-12 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        {/* Chapter Title */}
+        <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <h2
-              data-text="LEVEL 3: TOURPHIN TRAVEL ENGINE"
-              className="riso-title font-display text-3xl font-black uppercase tracking-tight text-[#1B1A17] sm:text-5xl md:text-6xl dark:text-[#EBE3D3]"
-            >
-              TOURPHIN TRAVEL ENGINE
+            <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#14110F]">
+              Tourphin <span className="italic font-serif text-[#6B1E1E]">Travel Platform</span>
             </h2>
-            <p className="mt-3 max-w-3xl font-serif text-lg italic text-[#4B463E] sm:text-xl dark:text-[#B2A896]">
-              &ldquo;Connecting travelers with real local guides who actually know the secret spots &mdash; backed by PostgreSQL indexing, transactional webhooks, and AWS CloudFront.&rdquo;
+            <p className="mt-4 max-w-2xl font-serif text-lg font-light text-[#6F665A] leading-relaxed">
+              Connecting travelers directly with local guides who possess authentic neighborhood knowledge &mdash; backed by PostgreSQL normalization, transactional webhooks, and AWS CloudFront.
             </p>
           </div>
 
-          {/* Live Link Button */}
-          <div className="flex shrink-0 items-center gap-3">
-            <a
-              href="https://tourphin-eight.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-cursor="pointer"
-              className="flex items-center gap-2 rounded border-2 border-[#1B1A17] bg-[#D9432B] px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#1B1A17] transition-all hover:translate-x-[1px] hover:translate-y-[1px] dark:border-[#EBE3D3] dark:shadow-[3px_3px_0px_0px_#EBE3D3]"
-            >
-              <Compass className="h-4 w-4" />
-              <span>Launch Live Tourphin</span>
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
-          </div>
+          <a
+            href="https://tourphin-eight.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 rounded border border-[#6F665A]/30 bg-[#EDE5D3]/60 px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] hover:bg-[#EDE5D3] transition-colors shrink-0"
+          >
+            <Compass className="h-3.5 w-3.5 text-[#B08D57]" />
+            <span>Visit Live Demo</span>
+            <ExternalLink className="h-3 w-3 text-[#6F665A]" />
+          </a>
         </div>
 
-        {/* 4 Architectural Metric Stamps */}
-        <div className="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <div className="stamp-border rounded bg-[#F2EBDD] p-4 text-center dark:bg-[#24201A]">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#837B6D] dark:text-[#7E7565]">
+        {/* 4 Resume Metric Cards */}
+        <div className="mb-12 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="rounded border-hairline bg-[#F6F1E7] p-6 text-center shadow-editorial">
+            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6F665A]">
               QUERY EFFICIENCY
             </span>
-            <div className="my-1 font-display text-3xl font-black text-[#D9432B] dark:text-[#E55840]">
+            <div className="my-2 font-display text-4xl font-light text-[#8C6B3A]">
               ~35%
             </div>
-            <span className="font-mono text-[11px] text-[#4B463E] dark:text-[#B2A896]">
-              via Indexing &amp; Normalization
+            <span className="font-mono text-[10px] text-[#6F665A]">
+              Index &amp; Normalization Gain
             </span>
           </div>
 
-          <div className="stamp-border rounded bg-[#F2EBDD] p-4 text-center dark:bg-[#24201A]">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#837B6D] dark:text-[#7E7565]">
-              SCHEMA CAPACITY
+          <div className="rounded border-hairline bg-[#F6F1E7] p-6 text-center shadow-editorial">
+            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6F665A]">
+              DATABASE SCALE
             </span>
-            <div className="my-1 font-display text-3xl font-black text-[#1B1A17] dark:text-[#EBE3D3]">
+            <div className="my-2 font-display text-4xl font-light text-[#14110F]">
               10,000+
             </div>
-            <span className="font-mono text-[11px] text-[#4B463E] dark:text-[#B2A896]">
-              Users, Bookings &amp; Logs
+            <span className="font-mono text-[10px] text-[#6F665A]">
+              Users &amp; Transaction Logs
             </span>
           </div>
 
-          <div className="stamp-border rounded bg-[#F2EBDD] p-4 text-center dark:bg-[#24201A]">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#837B6D] dark:text-[#7E7565]">
-              RAZORPAY SUCCESS
+          <div className="rounded border-hairline bg-[#F6F1E7] p-6 text-center shadow-editorial">
+            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6F665A]">
+              PAYMENT VERIFICATION
             </span>
-            <div className="my-1 font-display text-3xl font-black text-[#7A8B6F] dark:text-[#92A585]">
+            <div className="my-2 font-display text-4xl font-light text-[#8C6B3A]">
               99%
             </div>
-            <span className="font-mono text-[11px] text-[#4B463E] dark:text-[#B2A896]">
-              Across 500+ Monthly Txns
+            <span className="font-mono text-[10px] text-[#6F665A]">
+              500+ Monthly Razorpay Txns
             </span>
           </div>
 
-          <div className="stamp-border rounded bg-[#F2EBDD] p-4 text-center dark:bg-[#24201A]">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#837B6D] dark:text-[#7E7565]">
+          <div className="rounded border-hairline bg-[#F6F1E7] p-6 text-center shadow-editorial">
+            <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#6F665A]">
               FAILURE REDUCTION
             </span>
-            <div className="my-1 font-display text-3xl font-black text-[#C99A3B] dark:text-[#DEB459]">
+            <div className="my-2 font-display text-4xl font-light text-[#6B1E1E]">
               25%
             </div>
-            <span className="font-mono text-[11px] text-[#4B463E] dark:text-[#B2A896]">
+            <span className="font-mono text-[10px] text-[#6F665A]">
               Transactional Check Guards
             </span>
           </div>
         </div>
 
-        {/* Narrative & Interactive Itinerary Machine */}
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-          {/* Left Column (7 cols): Engineering Dossier */}
+        {/* Two-Column Layout */}
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+          {/* Left Column: Architectural Dossier */}
           <div className="space-y-6 lg:col-span-7">
-            <div className="rounded border-2 border-[#1B1A17] bg-[#F2EBDD] p-6 shadow-[5px_5px_0px_0px_#1B1A17] dark:border-[#EBE3D3] dark:bg-[#24201A] dark:shadow-[5px_5px_0px_0px_#EBE3D3]">
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#D9432B] dark:text-[#E55840]">
-                SMART INDIA HACKATHON (SIH) ORIGIN STORY
+            <div className="rounded border-hairline bg-[#F6F1E7] p-8 shadow-editorial">
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#8C6B3A] font-semibold">
+                SYSTEM SPECIFICATIONS
               </span>
 
-              <div className="mt-4 space-y-4 font-serif text-base leading-relaxed text-[#1B1A17] dark:text-[#EBE3D3]">
+              <div className="mt-6 font-serif text-base leading-relaxed text-[#14110F]/90 space-y-4">
                 <p>
-                  Commercial tourism is filled with generic, overpriced packages that miss real city culture.
-                  We asked: <em>What if tourists could book authentic local guides, and guides could introduce their own curated routes?</em>
+                  Built for the Smart India Hackathon (SIH), Tourphin was conceived to eliminate friction between travelers and real local guides:
                 </p>
-                <p>
-                  Tourphin was built from the ground up to solve this:
-                </p>
-                <ul className="list-inside list-disc space-y-2 font-mono text-xs text-[#4B463E] dark:text-[#B2A896]">
+                <ul className="space-y-2.5 font-mono text-xs text-[#6F665A] list-disc list-inside">
                   <li>
-                    <strong>Granular RBAC:</strong> Dedicated interfaces for Travelers, Verified Local Guides, and Platform Administrators.
+                    <strong className="text-[#14110F]">Role-Based Access Control:</strong> Isolated dashboards for Travelers, Verified Guides, and Platform Administrators.
                   </li>
                   <li>
-                    <strong>Dynamic Itinerary Customization:</strong> Travelers can take an existing route and add custom hidden stops; guides review and accept or adjust fees before confirmation.
+                    <strong className="text-[#14110F]">Dynamic Itinerary Modification:</strong> Guides introduce custom plans, and travelers can add custom waypoints with live fee adjustments.
                   </li>
                   <li>
-                    <strong>Razorpay Webhook Verification:</strong> Cryptographically validated payment events synced with database status to eliminate ghost bookings.
+                    <strong className="text-[#14110F]">Webhook Idempotency:</strong> Razorpay payment signatures are validated cryptographically to prevent duplicate reservations.
                   </li>
                   <li>
-                    <strong>AWS Media Pipeline:</strong> Guide credentials and landmark photography hosted on AWS S3 with CloudFront edge caching.
+                    <strong className="text-[#14110F]">Cloud Edge Caching:</strong> Verification documents and media delivered via AWS S3 and CloudFront.
                   </li>
                 </ul>
               </div>
             </div>
           </div>
 
-          {/* Right Column (5 cols): Interactive Guide Itinerary Customizer */}
+          {/* Right Column: Clean Itinerary Demo */}
           <div className="space-y-6 lg:col-span-5">
-            <div className="rounded border-2 border-[#1B1A17] bg-[#FBF8F1] p-5 shadow-[6px_6px_0px_0px_#1B1A17] dark:border-[#EBE3D3] dark:bg-[#24201A] dark:shadow-[6px_6px_0px_0px_#EBE3D3]">
-              <div className="flex items-center justify-between border-b border-[#D3C4A5] pb-2 font-mono text-xs dark:border-[#3A3328]">
-                <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                  INTERACTIVE ITINERARY MACHINE
+            <div className="rounded border-hairline bg-[#EDE5D3]/40 p-6 shadow-editorial">
+              <div className="flex items-center justify-between border-b-hairline pb-3 font-mono text-[10px] text-[#6F665A]">
+                <span className="font-medium text-[#14110F]">
+                  ITINERARY CONFIGURATION PLATE
                 </span>
-                <span className="text-[#837B6D] dark:text-[#7E7565]">LIVE DEMO</span>
+                <span>INTERACTIVE</span>
               </div>
 
-              {/* Current Itinerary Stops */}
               <div className="mt-4 space-y-2">
-                <span className="font-mono text-[11px] font-bold uppercase text-[#837B6D] dark:text-[#7E7565]">
-                  Active Itinerary Route:
+                <span className="font-mono text-[10px] uppercase tracking-wider text-[#6F665A]">
+                  Active Selected Stops:
                 </span>
-                <div className="rounded border border-[#D3C4A5] bg-[#F2EBDD] p-2.5 font-mono text-xs dark:border-[#3A3328] dark:bg-[#181512]">
-                  <div className="text-[11px] font-bold text-[#7A8B6F] dark:text-[#92A585]">
-                    &bull; Base Guide Day Pass &mdash; ₹1,200
+                <div className="rounded border-hairline bg-[#F6F1E7] p-3 font-mono text-xs">
+                  <div className="text-[11px] text-[#8C6B3A] font-medium">
+                    &bull; Base Guide Standard Route &mdash; ₹1,200
                   </div>
                   {itinerary.map((stop) => (
                     <div
                       key={stop.id}
-                      className="mt-1.5 flex items-center justify-between rounded bg-[#E4D7C2]/60 px-2 py-1 dark:bg-[#24201A]"
+                      className="mt-2 flex items-center justify-between rounded bg-[#EDE5D3]/50 px-2.5 py-1.5"
                     >
-                      <span>
+                      <span className="text-[11px] text-[#14110F]">
                         + {stop.name} ({stop.duration})
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-[#D9432B]">₹{stop.cost}</span>
+                        <span className="font-medium text-[#8C6B3A]">₹{stop.cost}</span>
                         <button
                           onClick={() => removeStop(stop.id)}
-                          title="Remove stop"
-                          className="text-[#837B6D] hover:text-[#D9432B]"
+                          className="text-[#6F665A] hover:text-[#6B1E1E]"
                         >
                           <Trash2 className="h-3 w-3" />
                         </button>
@@ -218,10 +198,10 @@ export function Level3FirstBuild() {
 
               {/* Add Custom Stop Options */}
               <div className="mt-4">
-                <span className="font-mono text-[11px] font-bold uppercase text-[#837B6D] dark:text-[#7E7565]">
-                  Available Local Hidden Gems:
+                <span className="font-mono text-[10px] uppercase tracking-wider text-[#6F665A]">
+                  Available Optional Waypoints:
                 </span>
-                <div className="mt-1.5 space-y-1.5">
+                <div className="mt-2 space-y-1.5">
                   {availableStops.map((stop) => {
                     const isAdded = itinerary.some((s) => s.id === stop.id);
                     return (
@@ -231,21 +211,14 @@ export function Level3FirstBuild() {
                         disabled={isAdded}
                         className={`flex w-full items-center justify-between rounded border p-2 text-left font-mono text-xs transition-colors ${
                           isAdded
-                            ? "border-dashed border-[#837B6D]/40 opacity-50"
-                            : "border-[#1B1A17] bg-[#F2EBDD] hover:border-[#D9432B] dark:border-[#EBE3D3] dark:bg-[#181512]"
+                            ? "border-hairline opacity-40 bg-transparent"
+                            : "border-hairline bg-[#F6F1E7] hover:border-[#B08D57]"
                         }`}
                       >
-                        <div>
-                          <div className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                            {stop.name}
-                          </div>
-                          <div className="text-[10px] text-[#837B6D]">
-                            Duration: {stop.duration}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1 font-bold text-[#D9432B]">
+                        <span className="text-[11px] text-[#14110F]">{stop.name}</span>
+                        <div className="flex items-center gap-1.5 text-[#8C6B3A] font-medium text-[11px]">
                           <span>₹{stop.cost}</span>
-                          {isAdded ? <CheckCircle className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                          {!isAdded && <Plus className="h-3 w-3" />}
                         </div>
                       </button>
                     );
@@ -253,12 +226,9 @@ export function Level3FirstBuild() {
                 </div>
               </div>
 
-              {/* Calculated Total Bar */}
-              <div className="mt-5 flex items-center justify-between border-t border-[#D3C4A5] pt-3 font-mono dark:border-[#3A3328]">
-                <span className="text-xs uppercase text-[#837B6D]">
-                  Estimated Total:
-                </span>
-                <span className="text-lg font-black text-[#1B1A17] dark:text-[#EBE3D3]">
+              <div className="mt-6 flex items-baseline justify-between border-t-hairline pt-3 font-mono">
+                <span className="text-[10px] uppercase text-[#6F665A]">Calculated Total:</span>
+                <span className="font-display text-2xl font-light text-[#14110F]">
                   ₹{totalCost.toLocaleString()}
                 </span>
               </div>
@@ -269,4 +239,3 @@ export function Level3FirstBuild() {
     </section>
   );
 }
-

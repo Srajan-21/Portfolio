@@ -1,181 +1,144 @@
 "use client";
 
 import React, { useState } from "react";
-import { soundEngine } from "@/lib/sound";
-import { useJournal } from "@/context/JournalContext";
-import { Cpu, Zap, Database, FileText, ArrowRight, CheckCircle2, AlertTriangle, RefreshCw } from "lucide-react";
+import { useCollector } from "@/context/CollectorContext";
+import { Cpu, Zap, Database, FileText, RefreshCw } from "lucide-react";
 
 export function Level5Clavis() {
-  const { addXP } = useJournal();
-  const [activeSubsystem, setActiveSubsystem] = useState<number>(0);
+  const { unlockSeal } = useCollector();
+  const [activePlate, setActivePlate] = useState<number>(0);
 
-  // Machine 1: LLM Gateway state
+  // Plate 1: Gateway fallback simulation
   const [gatewayStatus, setGatewayStatus] = useState<"idle" | "dispatching" | "fallback" | "success">("idle");
-  const [gatewayLog, setGatewayLog] = useState<string>("Ready to dispatch token stream.");
+  const [gatewayLog, setGatewayLog] = useState<string>("Standby. Ready to evaluate multi-key cascade.");
 
   const handleTestGateway = () => {
-    soundEngine.playClick();
     setGatewayStatus("dispatching");
-    setGatewayLog("[GATEWAY] Dispatching request to Key #1 (Primary Gemini Pro)...");
+    setGatewayLog("[GATEWAY] Dispatching token request to Primary Key #1 (Gemini Pro)...");
 
     setTimeout(() => {
       setGatewayStatus("fallback");
-      setGatewayLog("[GATEWAY 429] Key #1 hit Pacific RPD quota limit! Concurrency lock triggered -> Tripping fallback to Key #2 (Gemini Flash)...");
-      soundEngine.playPenScratch();
+      setGatewayLog("[429 QUOTA EXCEEDED] Primary key reached concurrency threshold -> Triggering atomic fallback to Key #2 (Gemini Flash)...");
 
       setTimeout(() => {
         setGatewayStatus("success");
-        setGatewayLog("[GATEWAY 200 OK] Key #2 returned 200 SSE stream in 184ms! Fallback cascade executed without user interruption.");
-        soundEngine.playStamp();
-        addXP(40, "LLM GATEWAY FALLBACK TESTED");
+        setGatewayLog("[200 OK] Secondary key returned valid SSE stream in 184ms. Zero user-perceived interruption.");
+        unlockSeal("seal_clavis");
       }, 700);
     }, 600);
   };
 
-  // Machine 2: ATS Engine state
-  const [atsScore, setAtsScore] = useState<number>(88);
-  const [atsPreset, setAtsPreset] = useState<"strong" | "weak">("strong");
-
-  const handleSelectPreset = (preset: "strong" | "weak") => {
-    soundEngine.playClick();
-    setAtsPreset(preset);
-    if (preset === "strong") {
-      setAtsScore(92);
-      addXP(20, "STRONG ATS PROFILE SCANNED");
-    } else {
-      setAtsScore(46);
-    }
-  };
-
-  // Machine 4: ARIA Typewriter Diff state
+  // Plate 2: ATS illustrative example
+  const [atsPreset, setAtsPreset] = useState<"standard" | "uncalibrated">("standard");
   const [ariaStep, setAriaStep] = useState<number>(1);
-  const handleAriaToggle = () => {
-    soundEngine.playClick();
-    setAriaStep((prev) => (prev === 1 ? 2 : 1));
-    addXP(20, "ARIA DIFF TRANSFORMED");
-  };
 
-  const subsystems = [
-    { id: 0, title: "Multi-Key LLM Gateway", tag: "FAULT TOLERANCE" },
-    { id: 1, title: "Zero-LLM ATS Engine", tag: "<5MS SCORING" },
-    { id: 2, title: "Concurrent ETL Pipeline", tag: "10,000+ JOBS" },
-    { id: 3, title: "ARIA Autonomous Editor", tag: "STREAMING SSE & DIFF" },
+  const technicalPlates = [
+    { id: 0, title: "Multi-Key LLM Gateway", label: "FAULT TOLERANCE" },
+    { id: 1, title: "Deterministic ATS Engine", label: "<5MS EVALUATION" },
+    { id: 2, title: "Concurrent ETL Pipeline", label: "DATA INGESTION" },
+    { id: 3, title: "ARIA Semantic Editor", label: "STREAMING SSE & DIFF" },
   ];
 
   return (
     <section
-      id="level-5"
-      className="relative min-h-screen w-full border-b-2 border-dashed border-[#D3C4A5] bg-[#F2EBDD] py-16 px-4 transition-colors duration-300 sm:px-8 md:py-24 dark:border-[#3A3328] dark:bg-[#181512]"
+      id="chapter-5"
+      className="relative min-h-screen w-full border-b-hairline bg-[#FAF7F2] py-20 px-6 sm:px-12 md:py-28"
     >
-      <div className="mx-auto max-w-6xl">
-        {/* Level Header */}
-        <div className="mb-10 flex flex-wrap items-baseline justify-between border-b border-[#D3C4A5] pb-4 font-mono text-xs uppercase tracking-wider text-[#837B6D] dark:border-[#3A3328] dark:text-[#7E7565]">
+      <div className="mx-auto max-w-5xl">
+        {/* Chapter Header */}
+        <div className="mb-12 flex flex-wrap items-baseline justify-between border-b-hairline pb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F665A]">
           <div className="flex items-center gap-2">
-            <span className="rounded bg-[#D9432B] px-2 py-0.5 font-bold text-white">
-              LEVEL 05
-            </span>
-            <span>THE MAGNUM OPUS // 2025 &ndash; 2026</span>
+            <span className="text-[#8C6B3A] font-semibold">CHAPTER V</span>
+            <span>&bull;</span>
+            <span>THE STARTUP MAGNUM OPUS // 2025 &ndash; 2026</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#D9432B] animate-ping" />
-            <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-              CLAVIS &bull; INTELLIGENT ATS &amp; JOB PLATFORM
-            </span>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#B08D57]" />
+            <span className="text-[#14110F]">IN DEVELOPMENT &bull; LAUNCHING SOON</span>
           </div>
         </div>
 
-        {/* Level Title */}
-        <div className="mb-12">
-          <h2
-            data-text="LEVEL 5: CLAVIS — THE STARTUP MAGNUM OPUS"
-            className="riso-title font-display text-3xl font-black uppercase tracking-tight text-[#1B1A17] sm:text-5xl md:text-6xl dark:text-[#EBE3D3]"
-          >
-            CLAVIS &mdash; THE STARTUP MAGNUM OPUS
+        {/* Chapter Title */}
+        <div className="mb-14">
+          <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#14110F]">
+            CLAVIS <span className="italic font-serif text-[#6B1E1E]">Architecture</span>
           </h2>
-          <p className="mt-3 max-w-3xl font-serif text-lg italic text-[#4B463E] sm:text-xl dark:text-[#B2A896]">
-            &ldquo;Co-founded alongside Abhishek Yadav, Swaraj Kumar, Hemant, and Saurabh. I designed, architected, and implemented the core engines &mdash; from a sub-5ms Zero-LLM ATS evaluator to an atomic multi-key AI gateway.&rdquo;
+          <p className="mt-4 max-w-2xl font-serif text-lg font-light text-[#6F665A] leading-relaxed">
+            Co-founded alongside Abhishek Yadav, Swaraj Kumar, Hemant, and Saurabh. I designed, architected, planned, and implemented the core platform &mdash; featuring a sub-5ms Zero-LLM ATS scoring engine and an atomic multi-key AI gateway.
           </p>
         </div>
 
-        {/* Subsystem Navigation Pills */}
+        {/* Technical Plate Navigation Tabs */}
         <div className="mb-8 flex flex-wrap gap-2 font-mono text-xs">
-          {subsystems.map((sub) => (
+          {technicalPlates.map((plate) => (
             <button
-              key={sub.id}
-              onClick={() => {
-                soundEngine.playClick();
-                setActiveSubsystem(sub.id);
-              }}
-              data-cursor="pointer"
-              className={`flex items-center gap-2 rounded border px-3 py-2 transition-all ${
-                activeSubsystem === sub.id
-                  ? "border-[#1B1A17] bg-[#D9432B] font-bold text-white shadow-[2px_2px_0px_0px_#1B1A17] dark:border-[#EBE3D3] dark:shadow-[2px_2px_0px_0px_#EBE3D3]"
-                  : "border-[#D3C4A5] bg-[#FBF8F1] text-[#1B1A17] hover:border-[#D9432B] dark:border-[#3A3328] dark:bg-[#24201A] dark:text-[#EBE3D3]"
+              key={plate.id}
+              onClick={() => setActivePlate(plate.id)}
+              className={`flex items-center gap-2 rounded border px-4 py-2 transition-all ${
+                activePlate === plate.id
+                  ? "border-[#B08D57] bg-[#EDE5D3] font-medium text-[#14110F]"
+                  : "border-hairline bg-[#F6F1E7] text-[#6F665A] hover:border-[#B08D57]/50"
               }`}
             >
-              <span>{sub.title}</span>
-              <span className="rounded bg-black/10 px-1.5 py-0.5 text-[9px] dark:bg-white/10">
-                {sub.tag}
+              <span>{plate.title}</span>
+              <span className="text-[9px] uppercase tracking-wider text-[#8C6B3A]">
+                {plate.label}
               </span>
             </button>
           ))}
         </div>
 
-        {/* Interactive Machine Showcase Area */}
-        <div className="rounded border-2 border-[#1B1A17] bg-[#FBF8F1] p-6 shadow-[6px_6px_0px_0px_#1B1A17] dark:border-[#EBE3D3] dark:bg-[#24201A] dark:shadow-[6px_6px_0px_0px_#EBE3D3]">
-          {/* MACHINE 0: MULTI-KEY LLM GATEWAY */}
-          {activeSubsystem === 0 && (
+        {/* Technical Plate Display Container */}
+        <div className="rounded border-hairline bg-[#F6F1E7] p-8 shadow-editorial">
+          {/* PLATE 0: MULTI-KEY LLM GATEWAY */}
+          {activePlate === 0 && (
             <div className="space-y-6">
-              <div className="flex flex-wrap items-center justify-between border-b border-[#D3C4A5] pb-3 font-mono text-xs dark:border-[#3A3328]">
-                <div className="flex items-center gap-2">
-                  <Cpu className="h-4 w-4 text-[#D9432B]" />
-                  <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    SUBSYSTEM 1: FAULT-TOLERANT MULTI-KEY LLM GATEWAY
-                  </span>
+              <div className="flex items-center justify-between border-b-hairline pb-4 font-mono text-[10px] text-[#6F665A]">
+                <div className="flex items-center gap-2 font-medium text-[#14110F]">
+                  <Cpu className="h-3.5 w-3.5 text-[#B08D57]" />
+                  <span>SUBSYSTEM PLATE 01 // FAULT-TOLERANT LLM GATEWAY</span>
                 </div>
-                <span className="text-[#837B6D] dark:text-[#7E7565]">
-                  PACIFIC TIMEZONE RPD/RPM AUTOMATION
-                </span>
+                <span>PACIFIC TIMEZONE RPD/RPM QUOTAS</span>
               </div>
 
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <div className="font-serif text-sm leading-relaxed text-[#1B1A17] dark:text-[#EBE3D3]">
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                <div className="font-serif text-sm leading-relaxed text-[#14110F]/90 space-y-4">
                   <p>
-                    Commercial LLMs suffer from arbitrary rate limits (HTTP 429) that cripple user workflows.
-                    To solve this, I designed a multi-key gateway architecture with:
+                    Commercial LLM endpoints frequently reject high-concurrency requests with HTTP 429 rate limits.
+                    To guarantee uninterrupted service, I architected a multi-key gateway:
                   </p>
-                  <ul className="mt-3 list-inside list-disc space-y-1.5 font-mono text-xs text-[#4B463E] dark:text-[#B2A896]">
-                    <li>Atomic concurrency locks preventing thread collision.</li>
-                    <li>Pacific-timezone quota classification tracking Requests Per Day (RPD) &amp; Per Minute (RPM).</li>
-                    <li>A 4-model fallback cascade (Gemini Pro &rarr; Flash &rarr; Secondary Key &rarr; Cache).</li>
+                  <ul className="space-y-2 font-mono text-xs text-[#6F665A] list-disc list-inside">
+                    <li>Atomic concurrency locks preventing thread cross-contamination.</li>
+                    <li>Pacific-timezone quota classification tracking RPD and RPM usage windows.</li>
+                    <li>4-tier model fallback cascade: Gemini Pro &rarr; Gemini Flash &rarr; Secondary Key &rarr; Stored Cache.</li>
                   </ul>
-                  <div className="mt-5">
+                  <div className="pt-2">
                     <button
                       onClick={handleTestGateway}
                       disabled={gatewayStatus === "dispatching" || gatewayStatus === "fallback"}
-                      className="flex items-center gap-2 rounded border border-[#1B1A17] bg-[#D9432B] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-[2px_2px_0px_0px_#1B1A17] transition-all hover:opacity-90 disabled:opacity-50 dark:border-[#EBE3D3]"
+                      className="flex items-center gap-2 rounded border border-[#6F665A]/30 bg-[#EDE5D3] px-4 py-2 font-mono text-xs text-[#14110F] hover:border-[#B08D57] transition-colors"
                     >
-                      <RefreshCw className={`h-3.5 w-3.5 ${gatewayStatus === "dispatching" ? "animate-spin" : ""}`} />
-                      <span>Simulate Traffic Spike &amp; Key Fallback</span>
+                      <RefreshCw className={`h-3 w-3 ${gatewayStatus === "dispatching" ? "animate-spin text-[#B08D57]" : ""}`} />
+                      <span>Simulate Traffic Surge &amp; Fallback</span>
                     </button>
                   </div>
                 </div>
 
-                {/* Gateway Terminal Log Box */}
-                <div className="rounded border border-[#1B1A17] bg-[#1B1A17] p-4 font-mono text-xs text-[#F2EBDD] dark:border-[#3A3328]">
-                  <div className="flex items-center justify-between border-b border-[#3A3328] pb-2 text-[10px] text-[#837B6D]">
-                    <span>GATEWAY CONSOLE</span>
-                    <span className="text-[#7A8B6F]">SYSTEM HEALTHY</span>
+                {/* Console Log */}
+                <div className="rounded border-hairline bg-[#14110F] p-4 font-mono text-xs text-[#EDE5D3]">
+                  <div className="flex justify-between border-b border-[#EDE5D3]/20 pb-2 text-[10px] text-[#6F665A]">
+                    <span>GATEWAY TELEMETRY CONSOLE</span>
+                    <span className="text-[#8C6B3A]">DIAGNOSTIC ACTIVE</span>
                   </div>
-                  <div className="mt-3 min-h-[100px] leading-relaxed text-[#EBE3D3]">
+                  <div className="mt-3 min-h-[90px] leading-relaxed text-[#EDE5D3]/90 text-[11px]">
                     {gatewayLog}
                   </div>
-                  <div className="mt-3 flex items-center gap-4 border-t border-[#3A3328] pt-2 text-[10px]">
-                    <span className={gatewayStatus === "fallback" ? "text-[#D9432B] font-bold" : "text-[#7A8B6F]"}>
-                      Key #1: {gatewayStatus === "fallback" ? "LOCKED (429)" : "ACTIVE"}
+                  <div className="mt-3 flex justify-between border-t border-[#EDE5D3]/20 pt-2 text-[10px]">
+                    <span className={gatewayStatus === "fallback" ? "text-[#6B1E1E] font-medium" : "text-[#EDE5D3]/60"}>
+                      Key #1: {gatewayStatus === "fallback" ? "TRIPPED (429)" : "ONLINE"}
                     </span>
-                    <span className={gatewayStatus === "success" ? "text-[#7A8B6F] font-bold" : "text-[#837B6D]"}>
-                      Key #2 (Flash): {gatewayStatus === "success" ? "SERVING (200 OK)" : "STANDBY"}
+                    <span className={gatewayStatus === "success" ? "text-[#B08D57] font-medium" : "text-[#EDE5D3]/60"}>
+                      Key #2: {gatewayStatus === "success" ? "SERVING (200 OK)" : "STANDBY"}
                     </span>
                   </div>
                 </div>
@@ -183,87 +146,74 @@ export function Level5Clavis() {
             </div>
           )}
 
-          {/* MACHINE 1: ZERO-LLM ATS SCORING ENGINE */}
-          {activeSubsystem === 1 && (
+          {/* PLATE 1: ZERO-LLM ATS ENGINE */}
+          {activePlate === 1 && (
             <div className="space-y-6">
-              <div className="flex flex-wrap items-center justify-between border-b border-[#D3C4A5] pb-3 font-mono text-xs dark:border-[#3A3328]">
-                <div className="flex items-center gap-2">
-                  <Zap className="h-4 w-4 text-[#D9432B]" />
-                  <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    SUBSYSTEM 2: ZERO-LLM ATS SCORING ENGINE (SUB-5MS LATENCY)
-                  </span>
+              <div className="flex items-center justify-between border-b-hairline pb-4 font-mono text-[10px] text-[#6F665A]">
+                <div className="flex items-center gap-2 font-medium text-[#14110F]">
+                  <Zap className="h-3.5 w-3.5 text-[#B08D57]" />
+                  <span>SUBSYSTEM PLATE 02 // ZERO-LLM ATS SCORING ENGINE</span>
                 </div>
-                <span className="text-[#837B6D] dark:text-[#7E7565]">
-                  15 MODULES &bull; 3,100+ LINES OF TYPESCRIPT
-                </span>
+                <span>SUB-5MS EVALUATION LATENCY</span>
               </div>
 
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <div className="font-serif text-sm leading-relaxed text-[#1B1A17] dark:text-[#EBE3D3]">
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                <div className="font-serif text-sm leading-relaxed text-[#14110F]/90 space-y-4">
                   <p>
-                    Rather than burning expensive, slow LLM tokens for basic resume grading,
-                    I engineered a deterministic heuristic engine in TypeScript:
+                    Rather than consuming expensive, high-latency LLM calls for structural resume parsing,
+                    I engineered a deterministic TypeScript evaluator across 15 modular packages (3,100+ LOC):
                   </p>
-                  <ul className="mt-3 list-inside list-disc space-y-1.5 font-mono text-xs text-[#4B463E] dark:text-[#B2A896]">
-                    <li>Evaluates 8 weighted pillars in <strong>&lt;5ms</strong>.</li>
-                    <li>Built-in 400-term synonym taxonomy matching equivalent industry skills.</li>
-                    <li>Knockout criteria checking mandatory years of experience and core competencies.</li>
+                  <ul className="space-y-2 font-mono text-xs text-[#6F665A] list-disc list-inside">
+                    <li>Evaluates 8 weighted pillars deterministically in <strong>&lt;5ms</strong>.</li>
+                    <li>Integrated 400-term synonym taxonomy grouping equivalent competencies.</li>
+                    <li>Knockout filters for mandatory skills and experience ceilings.</li>
                   </ul>
-
-                  <div className="mt-4 flex gap-2 font-mono text-xs">
+                  <div className="flex gap-2 pt-2 font-mono text-xs">
                     <button
-                      onClick={() => handleSelectPreset("strong")}
+                      onClick={() => setAtsPreset("standard")}
                       className={`rounded border px-3 py-1.5 ${
-                        atsPreset === "strong"
-                          ? "border-[#D9432B] bg-[#D9432B] text-white font-bold"
-                          : "border-[#D3C4A5] bg-[#F2EBDD] text-[#1B1A17] dark:border-[#3A3328] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                        atsPreset === "standard"
+                          ? "border-[#B08D57] bg-[#EDE5D3] text-[#14110F]"
+                          : "border-hairline bg-[#FAF7F2] text-[#6F665A]"
                       }`}
                     >
-                      Preset: Production Architect (92%)
+                      Illustrative Example A
                     </button>
                     <button
-                      onClick={() => handleSelectPreset("weak")}
+                      onClick={() => setAtsPreset("uncalibrated")}
                       className={`rounded border px-3 py-1.5 ${
-                        atsPreset === "weak"
-                          ? "border-[#D9432B] bg-[#D9432B] text-white font-bold"
-                          : "border-[#D3C4A5] bg-[#F2EBDD] text-[#1B1A17] dark:border-[#3A3328] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                        atsPreset === "uncalibrated"
+                          ? "border-[#B08D57] bg-[#EDE5D3] text-[#14110F]"
+                          : "border-hairline bg-[#FAF7F2] text-[#6F665A]"
                       }`}
                     >
-                      Preset: Vague Buzzwords (46%)
+                      Illustrative Example B
                     </button>
                   </div>
                 </div>
 
-                {/* ATS 8-Pillars Visualizer */}
-                <div className="rounded border border-[#D3C4A5] bg-[#F2EBDD] p-4 font-mono text-xs dark:border-[#3A3328] dark:bg-[#181512]">
-                  <div className="flex items-center justify-between border-b border-[#D3C4A5] pb-2 dark:border-[#3A3328]">
-                    <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                      OVERALL ATS FIT SCORE:
-                    </span>
-                    <span className={`text-xl font-black ${atsScore >= 80 ? "text-[#7A8B6F]" : "text-[#D9432B]"}`}>
-                      {atsScore} / 100
+                {/* ATS Evaluation Diagram */}
+                <div className="rounded border-hairline bg-[#FAF7F2] p-5 font-mono text-xs">
+                  <div className="flex items-center justify-between border-b-hairline pb-3">
+                    <span className="text-[#6F665A] text-[10px] uppercase">Evaluation Metric (Illustrative Demo)</span>
+                    <span className="font-display text-2xl font-light text-[#8C6B3A]">
+                      {atsPreset === "standard" ? "88 / 100" : "52 / 100"}
                     </span>
                   </div>
-
-                  <div className="mt-4 space-y-2.5">
+                  <div className="mt-4 space-y-3">
                     {[
-                      { name: "Hard Skills & Stack", pct: atsPreset === "strong" ? 95 : 40 },
-                      { name: "Quantified Impact Metrics", pct: atsPreset === "strong" ? 90 : 35 },
-                      { name: "400-Term Synonym Match", pct: atsPreset === "strong" ? 92 : 50 },
-                      { name: "Knockout Criteria", pct: atsPreset === "strong" ? 100 : 60 },
+                      { name: "Technical Competencies", pct: atsPreset === "standard" ? 92 : 55 },
+                      { name: "Quantified Impact Metrics", pct: atsPreset === "standard" ? 85 : 40 },
+                      { name: "Synonym Taxonomy Match", pct: atsPreset === "standard" ? 90 : 60 },
+                      { name: "Structural Knockout Checks", pct: atsPreset === "standard" ? 100 : 70 },
                     ].map((p) => (
                       <div key={p.name}>
-                        <div className="flex justify-between pb-0.5 text-[11px]">
+                        <div className="flex justify-between pb-1 text-[10px] text-[#6F665A]">
                           <span>{p.name}</span>
-                          <span className="font-bold">{p.pct}%</span>
+                          <span>{p.pct}%</span>
                         </div>
-                        <div className="h-1.5 w-full overflow-hidden rounded bg-[#D3C4A5]/40 dark:bg-[#3A3328]">
-                          <div
-                            className={`h-full transition-all duration-500 ${
-                              p.pct >= 80 ? "bg-[#7A8B6F]" : "bg-[#D9432B]"
-                            }`}
-                            style={{ width: `${p.pct}%` }}
-                          />
+                        <div className="h-[2px] w-full bg-[#EDE5D3]">
+                          <div className="h-full bg-[#B08D57]" style={{ width: `${p.pct}%` }} />
                         </div>
                       </div>
                     ))}
@@ -273,108 +223,87 @@ export function Level5Clavis() {
             </div>
           )}
 
-          {/* MACHINE 2: CONCURRENT ETL PIPELINE */}
-          {activeSubsystem === 2 && (
+          {/* PLATE 2: ETL PIPELINE */}
+          {activePlate === 2 && (
             <div className="space-y-6">
-              <div className="flex flex-wrap items-center justify-between border-b border-[#D3C4A5] pb-3 font-mono text-xs dark:border-[#3A3328]">
-                <div className="flex items-center gap-2">
-                  <Database className="h-4 w-4 text-[#D9432B]" />
-                  <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    SUBSYSTEM 3: CONCURRENT JOB ETL PIPELINE
-                  </span>
+              <div className="flex items-center justify-between border-b-hairline pb-4 font-mono text-[10px] text-[#6F665A]">
+                <div className="flex items-center gap-2 font-medium text-[#14110F]">
+                  <Database className="h-3.5 w-3.5 text-[#B08D57]" />
+                  <span>SUBSYSTEM PLATE 03 // CONCURRENT JOB ETL PIPELINE</span>
                 </div>
-                <span className="text-[#837B6D] dark:text-[#7E7565]">
-                  SHA-256 DEDUP &bull; 10,000+ RECORDS
-                </span>
+                <span>SHA-256 DEDUPLICATION</span>
               </div>
 
-              {/* Animated Pipeline Flow */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-4 font-mono text-xs text-center">
-                <div className="rounded border border-[#1B1A17] bg-[#F2EBDD] p-3 dark:border-[#EBE3D3] dark:bg-[#181512]">
-                  <span className="block font-bold text-[#D9432B]">01. INGEST</span>
-                  <span className="mt-1 block text-[11px] text-[#4B463E] dark:text-[#B2A896]">
-                    4 Job APIs in Parallel
-                  </span>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs text-center">
+                <div className="rounded border-hairline bg-[#FAF7F2] p-4">
+                  <span className="block text-[10px] text-[#8C6B3A] uppercase tracking-wider">01. INGEST</span>
+                  <span className="mt-1 block text-[#14110F] text-[11px]">4 Job APIs in Parallel</span>
                 </div>
-                <div className="rounded border border-[#1B1A17] bg-[#F2EBDD] p-3 dark:border-[#EBE3D3] dark:bg-[#181512]">
-                  <span className="block font-bold text-[#C99A3B]">02. DEDUPLICATE</span>
-                  <span className="mt-1 block text-[11px] text-[#4B463E] dark:text-[#B2A896]">
-                    SHA-256 Content Hash
-                  </span>
+                <div className="rounded border-hairline bg-[#FAF7F2] p-4">
+                  <span className="block text-[10px] text-[#8C6B3A] uppercase tracking-wider">02. DEDUP</span>
+                  <span className="mt-1 block text-[#14110F] text-[11px]">SHA-256 Content Hash</span>
                 </div>
-                <div className="rounded border border-[#1B1A17] bg-[#F2EBDD] p-3 dark:border-[#EBE3D3] dark:bg-[#181512]">
-                  <span className="block font-bold text-[#7A8B6F]">03. VALIDATE</span>
-                  <span className="mt-1 block text-[11px] text-[#4B463E] dark:text-[#B2A896]">
-                    Strict Zod Schema
-                  </span>
+                <div className="rounded border-hairline bg-[#FAF7F2] p-4">
+                  <span className="block text-[10px] text-[#8C6B3A] uppercase tracking-wider">03. VALIDATE</span>
+                  <span className="mt-1 block text-[#14110F] text-[11px]">Zod Strict Schema</span>
                 </div>
-                <div className="rounded border border-[#1B1A17] bg-[#F2EBDD] p-3 dark:border-[#EBE3D3] dark:bg-[#181512]">
-                  <span className="block font-bold text-[#1B1A17] dark:text-[#EBE3D3]">04. INDEX</span>
-                  <span className="mt-1 block text-[11px] text-[#4B463E] dark:text-[#B2A896]">
-                    Turso SQLite FTS5
-                  </span>
+                <div className="rounded border-hairline bg-[#FAF7F2] p-4">
+                  <span className="block text-[10px] text-[#8C6B3A] uppercase tracking-wider">04. INDEX</span>
+                  <span className="mt-1 block text-[#14110F] text-[11px]">Turso SQLite FTS5</span>
                 </div>
               </div>
 
-              <p className="font-serif text-sm leading-relaxed text-[#1B1A17] dark:text-[#EBE3D3]">
-                Processes 10,000+ live job postings daily with automatic 15-day stale record pruning,
-                feeding into 6 isolated Turso database instances for sub-10ms full-text searches.
+              <p className="font-serif text-sm leading-relaxed text-[#6F665A]">
+                Automated 15-day stale record pruning paired with trigger-synced full-text search indexes across 5 fields for sub-10ms query execution across isolated Turso database instances.
               </p>
             </div>
           )}
 
-          {/* MACHINE 3: ARIA AI RESUME EDITOR */}
-          {activeSubsystem === 3 && (
+          {/* PLATE 3: ARIA EDITOR */}
+          {activePlate === 3 && (
             <div className="space-y-6">
-              <div className="flex flex-wrap items-center justify-between border-b border-[#D3C4A5] pb-3 font-mono text-xs dark:border-[#3A3328]">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-[#D9432B]" />
-                  <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    SUBSYSTEM 4: ARIA AUTONOMOUS RESUME EDITOR
-                  </span>
+              <div className="flex items-center justify-between border-b-hairline pb-4 font-mono text-[10px] text-[#6F665A]">
+                <div className="flex items-center gap-2 font-medium text-[#14110F]">
+                  <FileText className="h-3.5 w-3.5 text-[#B08D57]" />
+                  <span>SUBSYSTEM PLATE 04 // ARIA SEMANTIC EDITOR</span>
                 </div>
-                <span className="text-[#837B6D] dark:text-[#7E7565]">
-                  STREAMING SSE &bull; LATEX COMPILATION &lt;30S
-                </span>
+                <span>STREAMING SSE &bull; LATEX COMPILATION</span>
               </div>
 
-              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <div className="font-serif text-sm leading-relaxed text-[#1B1A17] dark:text-[#EBE3D3]">
+              <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                <div className="font-serif text-sm leading-relaxed text-[#14110F]/90 space-y-4">
                   <p>
-                    ARIA tracks live bullet-point revisions with semantic diffing and compiles production-ready LaTeX documents in under 30 seconds.
+                    ARIA tracks live document revisions through semantic diffing and compiles production-ready LaTeX resumes in under 30 seconds.
                   </p>
-                  <div className="mt-4">
-                    <button
-                      onClick={handleAriaToggle}
-                      className="flex items-center gap-2 rounded border border-[#1B1A17] bg-[#D9432B] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-[2px_2px_0px_0px_#1B1A17] dark:border-[#EBE3D3]"
-                    >
-                      <span>Toggle ARIA Impact Transformation</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setAriaStep((prev) => (prev === 1 ? 2 : 1))}
+                    className="rounded border border-[#6F665A]/30 bg-[#EDE5D3] px-4 py-2 font-mono text-xs text-[#14110F] hover:border-[#B08D57] transition-colors"
+                  >
+                    <span>Toggle Revision Stage ({ariaStep}/2)</span>
+                  </button>
                 </div>
 
-                {/* Typewriter Diff Display */}
-                <div className="rounded border border-[#1B1A17] bg-[#F2EBDD] p-4 font-mono text-xs dark:border-[#3A3328] dark:bg-[#181512]">
-                  <div className="text-[10px] text-[#837B6D] pb-2 border-b border-[#D3C4A5] dark:border-[#3A3328]">
-                    SEMANTIC BULLET DIFF COMPARISON
+                <div className="rounded border-hairline bg-[#FAF7F2] p-5 font-mono text-xs">
+                  <div className="text-[10px] text-[#6F665A] border-b-hairline pb-2 mb-3">
+                    SEMANTIC DIFF COMPARISON
                   </div>
                   {ariaStep === 1 ? (
-                    <div className="mt-3 space-y-2">
-                      <div className="rounded bg-[#D9432B]/10 p-2 text-[#D9432B]">
-                        - Built backend APIs for jobs and user authentication.
+                    <div className="space-y-2">
+                      <div className="rounded border border-[#6B1E1E]/20 bg-[#6B1E1E]/5 p-2.5 text-[#6B1E1E]">
+                        &minus; Developed backend endpoints for user registration.
                       </div>
-                      <div className="text-[11px] text-[#837B6D]">
-                        [ARIA Critique]: Weak action verb. Lacks scale, concurrency, and measurable business impact.
-                      </div>
+                      <span className="text-[10px] text-[#6F665A]">
+                        [Review]: Lacks quantified scale, concurrency parameters, and operational scope.
+                      </span>
                     </div>
                   ) : (
-                    <div className="mt-3 space-y-2">
-                      <div className="rounded bg-[#7A8B6F]/20 p-2 text-[#7A8B6F] dark:text-[#92A585] font-bold">
-                        + Architected concurrent SSE gateway and multi-key quota management, processing 10,000+ jobs with 99.9% uptime.
+                    <div className="space-y-2">
+                      <div className="rounded border border-[#B08D57]/30 bg-[#B08D57]/10 p-2.5 text-[#14110F]">
+                        + Architected concurrent SSE gateway handling 10,000+ records with 99.9% uptime.
                       </div>
-                      <div className="text-[11px] text-[#7A8B6F] dark:text-[#92A585]">
-                        [ARIA Accepted]: High impact, technical precision, and verified metrics.
-                      </div>
+                      <span className="text-[10px] text-[#8C6B3A]">
+                        [Verified]: Measurable engineering impact, architectural metrics, and clear ownership.
+                      </span>
                     </div>
                   )}
                 </div>
@@ -386,4 +315,3 @@ export function Level5Clavis() {
     </section>
   );
 }
-

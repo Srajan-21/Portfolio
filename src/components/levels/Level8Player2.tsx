@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { soundEngine } from "@/lib/sound";
-import { useJournal } from "@/context/JournalContext";
+import { useCollector } from "@/context/CollectorContext";
 import { InkDoodleCanvas } from "@/components/canvas/InkDoodleCanvas";
 import { supabase } from "@/lib/supabase/client";
 import {
@@ -13,7 +12,7 @@ import {
   CheckCircle2,
   AlertCircle,
   UserCheck,
-  Sparkles,
+  Award,
 } from "lucide-react";
 
 interface GuestEntry {
@@ -25,7 +24,7 @@ interface GuestEntry {
 }
 
 export function Level8Player2() {
-  const { addXP } = useJournal();
+  const { unlockSeal, rank, sealsEarned, setCursorLabel } = useCollector();
 
   // Guestbook state
   const [entries, setEntries] = useState<GuestEntry[]>([]);
@@ -44,20 +43,23 @@ export function Level8Player2() {
   const [contactStatus, setContactStatus] = useState<"idle" | "success" | "error">("idle");
   const [contactError, setContactError] = useState<string | null>(null);
 
-  // Fetch guestbook entries on mount
+  // Certificate personalization
+  const [certificateName, setCertificateName] = useState("Distinguished Reader");
+  const [dateStamp, setDateStamp] = useState("October 2026");
+
   useEffect(() => {
+    setDateStamp(new Date().toLocaleDateString());
+    unlockSeal("seal_last_page");
+
     fetch("/api/guestbook")
       .then((res) => res.json())
       .then((data) => {
-        if (data.entries) {
-          setEntries(data.entries);
-        }
+        if (data.entries) setEntries(data.entries);
       })
       .catch(() => {});
 
-    // Realtime subscription for live guestbook posts
     const channel = supabase
-      .channel("guestbook_realtime")
+      .channel("collector_guestbook")
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "guestbook" },
@@ -71,13 +73,12 @@ export function Level8Player2() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [unlockSeal]);
 
   const handleGuestbookSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setGuestLoading(true);
     setGuestMsgFeedback(null);
-    soundEngine.playClick();
 
     try {
       const res = await fetch("/api/guestbook", {
@@ -92,22 +93,19 @@ export function Level8Player2() {
       });
 
       const result = await res.json();
-      if (!res.ok) {
-        throw new Error(result.error || "Failed to sign guestbook.");
-      }
+      if (!res.ok) throw new Error(result.error || "Failed to record signature.");
 
-      soundEngine.playStamp();
-      addXP(50, "GUESTBOOK SIGNED // PLAYER 2 REGISTERED");
+      unlockSeal("seal_guestbook");
       setGuestName("");
       setGuestMessage("");
       setDoodleData(null);
-      setGuestMsgFeedback("Note pinned to the journal!");
+      setGuestMsgFeedback("Signature permanently recorded in the ledger.");
 
       if (result.entry) {
         setEntries((prev) => [result.entry, ...prev]);
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Error submitting";
+      const msg = err instanceof Error ? err.message : "Error submitting signature";
       setGuestMsgFeedback(msg);
     } finally {
       setGuestLoading(false);
@@ -119,7 +117,6 @@ export function Level8Player2() {
     setContactLoading(true);
     setContactStatus("idle");
     setContactError(null);
-    soundEngine.playClick();
 
     try {
       const res = await fetch("/api/contact", {
@@ -135,19 +132,15 @@ export function Level8Player2() {
       });
 
       const result = await res.json();
-      if (!res.ok) {
-        throw new Error(result.error || "Failed to dispatch transmission.");
-      }
+      if (!res.ok) throw new Error(result.error || "Failed to dispatch communication.");
 
-      soundEngine.playStamp();
-      addXP(60, "TRANSMISSION DISPATCHED TO SRAJAN");
       setContactStatus("success");
       setContactName("");
       setContactEmail("");
       setContactSubject("");
       setContactBody("");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to deliver message.";
+      const msg = err instanceof Error ? err.message : "Delivery failure.";
       setContactStatus("error");
       setContactError(msg);
     } finally {
@@ -155,56 +148,47 @@ export function Level8Player2() {
     }
   };
 
-  const handleResumeDownload = () => {
-    soundEngine.playStamp();
-    addXP(40, "OFFICIAL RESUME DOSSIER DOWNLOADED");
-  };
-
   return (
     <section
-      id="level-8"
-      className="relative min-h-screen w-full border-b-2 border-dashed border-[#D3C4A5] bg-[#FBF8F1] py-16 px-4 transition-colors duration-300 sm:px-8 md:py-24 dark:border-[#3A3328] dark:bg-[#1B1814]"
+      id="chapter-8"
+      className="relative min-h-screen w-full border-b-hairline bg-[#F6F1E7] py-20 px-6 sm:px-12 md:py-28"
     >
-      <div className="mx-auto max-w-6xl">
-        {/* Level Header */}
-        <div className="mb-10 flex flex-wrap items-baseline justify-between border-b border-[#D3C4A5] pb-4 font-mono text-xs uppercase tracking-wider text-[#837B6D] dark:border-[#3A3328] dark:text-[#7E7565]">
+      <div className="mx-auto max-w-5xl">
+        {/* Chapter Header */}
+        <div className="mb-12 flex flex-wrap items-baseline justify-between border-b-hairline pb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-[#6F665A]">
           <div className="flex items-center gap-2">
-            <span className="rounded bg-[#D9432B] px-2 py-0.5 font-bold text-white">
-              FINAL LEVEL
-            </span>
-            <span>PLAYER 2 (YOU) // CO-OP &amp; TRANSMISSIONS</span>
+            <span className="text-[#8C6B3A] font-semibold">CHAPTER VIII</span>
+            <span>&bull;</span>
+            <span>THE LAST PAGE // THE CONFERRER</span>
           </div>
-          <div className="flex items-center gap-2 text-[#D9432B] dark:text-[#E55840]">
-            <UserCheck className="h-4 w-4" />
-            <span className="font-bold">STATUS: READY TO HIRE</span>
+          <div className="flex items-center gap-1.5 text-[#14110F]">
+            <UserCheck className="h-3.5 w-3.5 text-[#B08D57]" />
+            <span>OPEN TO SOFTWARE ENGINEERING ROLES</span>
           </div>
         </div>
 
-        {/* Level Title */}
-        <div className="mb-12">
-          <h2
-            data-text="FINAL LEVEL: PLAYER 2 (YOU)"
-            className="riso-title font-display text-3xl font-black uppercase tracking-tight text-[#1B1A17] sm:text-5xl md:text-6xl dark:text-[#EBE3D3]"
-          >
-            PLAYER 2 (YOU)
+        {/* Chapter Title */}
+        <div className="mb-14">
+          <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-light tracking-tight text-[#14110F]">
+            The Last <span className="italic font-serif text-[#6B1E1E]">Page</span>
           </h2>
-          <p className="mt-3 max-w-3xl font-serif text-lg italic text-[#4B463E] sm:text-xl dark:text-[#B2A896]">
-            &ldquo;You&apos;ve reached the end of Volume I. The story doesn&apos;t stop here &mdash; sign the field book, send a transmission, or press start to collaborate.&rdquo;
+          <p className="mt-4 max-w-2xl font-serif text-lg font-light text-[#6F665A] leading-relaxed">
+            You have reached the close of this edition. Sign the archival ledger, transmit an inquiry, or download the verified resume dossier below.
           </p>
         </div>
 
-        {/* Recruiter Call-To-Action Banner */}
-        <div className="mb-12 rounded border-2 border-[#1B1A17] bg-[#F2EBDD] p-6 shadow-[6px_6px_0px_0px_#1B1A17] dark:border-[#EBE3D3] dark:bg-[#24201A] dark:shadow-[6px_6px_0px_0px_#EBE3D3]">
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+        {/* Career Dossier & Resume Action Card */}
+        <div className="mb-14 rounded border-hairline bg-[#FAF7F2] p-8 shadow-editorial">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-              <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#D9432B] dark:text-[#E55840]">
-                CAREER AVAILABILITY STATUS
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#8C6B3A] font-semibold">
+                PROFESSIONAL ENGAGEMENT
               </span>
-              <h3 className="mt-1 font-display text-2xl font-black text-[#1B1A17] dark:text-[#EBE3D3]">
-                Open for Software Engineer &amp; Full Stack Roles
+              <h3 className="font-display text-2xl sm:text-3xl font-light text-[#14110F] mt-1">
+                Open to Full-Stack &amp; Backend Engineering
               </h3>
-              <p className="mt-2 max-w-2xl font-serif text-sm text-[#4B463E] dark:text-[#B2A896]">
-                Looking to build high-throughput backends, fault-tolerant payment flows, and thoughtful developer tooling in New Delhi, hybrid, or remote setups.
+              <p className="mt-2 font-serif text-sm text-[#6F665A] max-w-xl">
+                Available for software engineering roles in New Delhi, hybrid, or remote setups. Focusing on resilient distributed systems, payment reconciliation, and developer tooling.
               </p>
             </div>
 
@@ -213,76 +197,112 @@ export function Level8Player2() {
                 href="/api/resume"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={handleResumeDownload}
-                data-cursor="pointer"
-                className="flex items-center gap-2 rounded border-2 border-[#1B1A17] bg-[#D9432B] px-5 py-3 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-[3px_3px_0px_0px_#1B1A17] transition-all hover:translate-x-[1px] hover:translate-y-[1px] dark:border-[#EBE3D3] dark:shadow-[3px_3px_0px_0px_#EBE3D3]"
+                onMouseEnter={() => setCursorLabel("DOWNLOAD")}
+                onMouseLeave={() => setCursorLabel(null)}
+                className="flex items-center gap-2 rounded border border-[#6F665A]/30 bg-[#EDE5D3] px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] transition-colors"
               >
-                <Download className="h-4 w-4" />
-                <span>Download Resume Dossier</span>
+                <Download className="h-3.5 w-3.5 text-[#B08D57]" />
+                <span>Resume Dossier (PDF)</span>
               </a>
 
               <a
                 href="mailto:srivasrajan8@gmail.com"
-                data-cursor="pointer"
-                className="flex items-center gap-2 rounded border-2 border-[#1B1A17] bg-[#FBF8F1] px-5 py-3 font-mono text-xs font-bold uppercase tracking-wider text-[#1B1A17] shadow-[3px_3px_0px_0px_#1B1A17] transition-all hover:translate-x-[1px] hover:translate-y-[1px] dark:border-[#EBE3D3] dark:bg-[#181512] dark:text-[#EBE3D3] dark:shadow-[3px_3px_0px_0px_#EBE3D3]"
+                className="flex items-center gap-2 rounded border border-hairline bg-[#F6F1E7] px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] transition-colors"
               >
-                <Mail className="h-4 w-4 text-[#D9432B]" />
+                <Mail className="h-3.5 w-3.5 text-[#B08D57]" />
                 <span>Email Directly</span>
               </a>
             </div>
           </div>
         </div>
 
-        {/* Two Columns: Interactive Guestbook & Contact Transmission Desk */}
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-          {/* Left Column (6 cols): Pinned Ink Guestbook & Doodle Canvas */}
+        {/* Certificate of Passage Finale */}
+        <div className="mb-16 rounded border-2 border-[#B08D57]/40 bg-[#FAF7F2] p-8 sm:p-12 shadow-plinth text-center">
+          <div className="inline-flex items-center justify-center rounded-full border border-[#B08D57]/40 p-2 text-[#8C6B3A] mb-4">
+            <Award className="h-6 w-6" />
+          </div>
+
+          <div className="font-mono text-[10px] uppercase tracking-[0.3em] text-[#8C6B3A] font-semibold">
+            CERTIFICATE OF PASSAGE &bull; THE COLLECTOR&apos;S EDITION
+          </div>
+
+          <h4 className="font-display text-3xl sm:text-4xl font-light text-[#14110F] mt-3">
+            This Certifies That
+          </h4>
+
+          <div className="my-4 max-w-sm mx-auto">
+            <input
+              type="text"
+              value={certificateName}
+              onChange={(e) => setCertificateName(e.target.value)}
+              className="w-full text-center font-display text-2xl sm:text-3xl font-normal italic text-[#6B1E1E] bg-transparent border-b border-[#B08D57]/40 focus:outline-none focus:border-[#B08D57]"
+              placeholder="Your Name"
+            />
+          </div>
+
+          <p className="font-serif text-sm text-[#6F665A] max-w-md mx-auto">
+            Has traversed the chapters of Srajan Srivastava&apos;s monograph from BPIT Delhi (2022) to production at Hudle.
+          </p>
+
+          <div className="mt-8 flex flex-wrap justify-center items-center gap-6 font-mono text-xs text-[#6F665A] border-t-hairline pt-6">
+            <div>
+              <span className="block text-[9px] uppercase tracking-wider text-[#6F665A]/70">CONFERRED RANK</span>
+              <span className="font-medium text-[#14110F]">{rank}</span>
+            </div>
+            <span className="text-[#6F665A]/30">&bull;</span>
+            <div>
+              <span className="block text-[9px] uppercase tracking-wider text-[#6F665A]/70">SEALS ACCREDITED</span>
+              <span className="font-medium text-[#14110F]">{sealsEarned.length} of 12</span>
+            </div>
+            <span className="text-[#6F665A]/30">&bull;</span>
+            <div>
+              <span className="block text-[9px] uppercase tracking-wider text-[#6F665A]/70">DATE STAMP</span>
+              <span className="font-medium text-[#14110F]">{dateStamp}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Two Columns: Guestbook & Contact */}
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
+          {/* Left Column: Guestbook */}
           <div className="space-y-6 lg:col-span-6">
-            <div className="rounded border-2 border-[#1B1A17] bg-[#FBF8F1] p-6 shadow-[5px_5px_0px_0px_#1B1A17] dark:border-[#EBE3D3] dark:bg-[#24201A] dark:shadow-[5px_5px_0px_0px_#EBE3D3]">
-              <div className="flex items-center justify-between border-b border-[#D3C4A5] pb-3 font-mono text-xs dark:border-[#3A3328]">
-                <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                  FIELD GUESTBOOK // SIGN &amp; SKETCH
-                </span>
-                <span className="text-[#837B6D] dark:text-[#7E7565]">
-                  {entries.length} NOTES PINNED
-                </span>
+            <div className="rounded border-hairline bg-[#FAF7F2] p-8 shadow-editorial">
+              <div className="flex items-center justify-between border-b-hairline pb-3 font-mono text-[10px] text-[#6F665A]">
+                <span className="font-medium text-[#14110F]">ARCHIVAL GUESTBOOK</span>
+                <span>{entries.length} INSCRIPTIONS</span>
               </div>
 
               {guestMsgFeedback && (
-                <div className="mt-3 rounded border border-[#7A8B6F] bg-[#7A8B6F]/10 p-2 font-mono text-xs text-[#7A8B6F] dark:text-[#92A585]">
+                <div className="mt-3 rounded border border-[#B08D57]/40 bg-[#EDE5D3]/40 p-2 font-mono text-xs text-[#8C6B3A]">
                   {guestMsgFeedback}
                 </div>
               )}
 
               <form onSubmit={handleGuestbookSubmit} className="mt-4 space-y-3 font-mono text-xs">
                 <div>
-                  <label className="block font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    Your Name or Handle:
-                  </label>
+                  <label className="block text-[#14110F] font-medium text-[11px]">Your Name / Identity:</label>
                   <input
                     type="text"
                     required
                     value={guestName}
                     onChange={(e) => setGuestName(e.target.value)}
                     placeholder="e.g. Fellow Engineer"
-                    className="mt-1 w-full rounded border border-[#1B1A17] bg-[#F2EBDD] p-2 text-[#1B1A17] focus:border-[#D9432B] focus:outline-none dark:border-[#EBE3D3] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    Your Note to Srajan:
-                  </label>
+                  <label className="block text-[#14110F] font-medium text-[11px]">Note / Inscription:</label>
                   <textarea
                     required
                     rows={3}
                     value={guestMessage}
                     onChange={(e) => setGuestMessage(e.target.value)}
-                    placeholder="Leave feedback, an idea, or college memories..."
-                    className="mt-1 w-full rounded border border-[#1B1A17] bg-[#F2EBDD] p-2 text-[#1B1A17] focus:border-[#D9432B] focus:outline-none dark:border-[#EBE3D3] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                    placeholder="Leave a thought, reflection, or note..."
+                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
                   />
                 </div>
 
-                {/* Doodle Canvas Component */}
                 <div className="pt-2">
                   <InkDoodleCanvas onDoodleChange={setDoodleData} />
                 </div>
@@ -290,39 +310,31 @@ export function Level8Player2() {
                 <button
                   type="submit"
                   disabled={guestLoading}
-                  className="mt-2 flex w-full items-center justify-center gap-2 rounded border border-[#1B1A17] bg-[#D9432B] py-2.5 font-bold uppercase tracking-wider text-white shadow-[2px_2px_0px_0px_#1B1A17] hover:opacity-90 disabled:opacity-50 dark:border-[#EBE3D3]"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded border border-[#6F665A]/30 bg-[#EDE5D3] py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] disabled:opacity-50 transition-colors"
                 >
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>{guestLoading ? "Pinning Note..." : "Pin Entry to Field Book (+50 XP)"}</span>
+                  <span>{guestLoading ? "Recording..." : "Record Inscription to Archive"}</span>
                 </button>
               </form>
 
-              {/* Scrollable list of recent guest notes */}
-              <div className="mt-6 border-t border-[#D3C4A5] pt-4 dark:border-[#3A3328]">
-                <span className="font-mono text-[11px] font-bold uppercase text-[#837B6D] dark:text-[#7E7565]">
-                  Recent Journal Signatures:
-                </span>
-                <div className="mt-3 max-h-[300px] space-y-2.5 overflow-y-auto pr-1">
+              {/* Inscriptions Feed */}
+              <div className="mt-8 border-t-hairline pt-4">
+                <span className="font-mono text-[10px] uppercase text-[#6F665A]">Recent Inscriptions:</span>
+                <div className="mt-3 max-h-[260px] space-y-2.5 overflow-y-auto pr-1">
                   {entries.map((entry) => (
-                    <div
-                      key={entry.id}
-                      className="rounded border border-[#D3C4A5] bg-[#F2EBDD] p-3 text-xs dark:border-[#3A3328] dark:bg-[#181512]"
-                    >
-                      <div className="flex items-center justify-between font-mono text-[10px] text-[#837B6D]">
-                        <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                          {entry.name}
-                        </span>
+                    <div key={entry.id} className="rounded border-hairline bg-[#F6F1E7] p-3 text-xs">
+                      <div className="flex justify-between font-mono text-[10px] text-[#6F665A]">
+                        <span className="font-medium text-[#14110F]">{entry.name}</span>
                         <span>{new Date(entry.created_at).toLocaleDateString()}</span>
                       </div>
-                      <p className="mt-1.5 font-serif text-sm text-[#4B463E] dark:text-[#B2A896]">
+                      <p className="mt-1 font-serif text-xs text-[#14110F]/80">
                         &ldquo;{entry.message}&rdquo;
                       </p>
                       {entry.doodle_data && (
                         <div className="mt-2">
                           <img
                             src={entry.doodle_data}
-                            alt="Guest Doodle"
-                            className="h-10 rounded border border-[#D3C4A5] bg-white/40 p-1 dark:bg-black/30"
+                            alt="Doodle"
+                            className="h-8 rounded border-hairline bg-white/40 p-0.5"
                           />
                         </div>
                       )}
@@ -333,25 +345,23 @@ export function Level8Player2() {
             </div>
           </div>
 
-          {/* Right Column (6 cols): Direct Contact Transmission Desk */}
+          {/* Right Column: Contact Desk */}
           <div className="space-y-6 lg:col-span-6">
-            <div className="rounded border-2 border-[#1B1A17] bg-[#FBF8F1] p-6 shadow-[5px_5px_0px_0px_#1B1A17] dark:border-[#EBE3D3] dark:bg-[#24201A] dark:shadow-[5px_5px_0px_0px_#EBE3D3]">
-              <div className="flex items-center justify-between border-b border-[#D3C4A5] pb-3 font-mono text-xs dark:border-[#3A3328]">
-                <span className="font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                  TRANSMISSION DESK // CONTACT SRAJAN
-                </span>
-                <span className="text-[#D9432B] font-bold">DIRECT TO INBOX</span>
+            <div className="rounded border-hairline bg-[#FAF7F2] p-8 shadow-editorial">
+              <div className="flex items-center justify-between border-b-hairline pb-3 font-mono text-[10px] text-[#6F665A]">
+                <span className="font-medium text-[#14110F]">DIRECT TRANSMISSION DESK</span>
+                <span>INBOX</span>
               </div>
 
               {contactStatus === "success" && (
-                <div className="mt-4 flex items-center gap-2 rounded border border-[#7A8B6F] bg-[#7A8B6F]/10 p-3 font-mono text-xs text-[#7A8B6F] dark:text-[#92A585]">
+                <div className="mt-4 flex items-center gap-2 rounded border border-[#B08D57]/40 bg-[#EDE5D3]/40 p-3 font-mono text-xs text-[#8C6B3A]">
                   <CheckCircle2 className="h-4 w-4 shrink-0" />
-                  <span>Transmission received! Srajan will respond to your email promptly.</span>
+                  <span>Communication recorded. Srajan will review and reply promptly.</span>
                 </div>
               )}
 
               {contactStatus === "error" && (
-                <div className="mt-4 flex items-center gap-2 rounded border border-[#D9432B] bg-[#D9432B]/10 p-3 font-mono text-xs text-[#D9432B]">
+                <div className="mt-4 flex items-center gap-2 rounded border border-[#6B1E1E]/30 bg-[#6B1E1E]/5 p-3 font-mono text-xs text-[#6B1E1E]">
                   <AlertCircle className="h-4 w-4 shrink-0" />
                   <span>{contactError}</span>
                 </div>
@@ -359,114 +369,73 @@ export function Level8Player2() {
 
               <form onSubmit={handleContactSubmit} className="mt-4 space-y-4 font-mono text-xs">
                 <div>
-                  <label className="block font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    Your Name:
-                  </label>
+                  <label className="block text-[#14110F] font-medium text-[11px]">Your Name:</label>
                   <input
                     type="text"
                     required
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
-                    placeholder="e.g. Jane Doe (Tech Lead)"
-                    className="mt-1 w-full rounded border border-[#1B1A17] bg-[#F2EBDD] p-2 text-[#1B1A17] focus:border-[#D9432B] focus:outline-none dark:border-[#EBE3D3] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                    placeholder="e.g. Hiring Manager / Tech Lead"
+                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    Your Email:
-                  </label>
+                  <label className="block text-[#14110F] font-medium text-[11px]">Email Address:</label>
                   <input
                     type="email"
                     required
                     value={contactEmail}
                     onChange={(e) => setContactEmail(e.target.value)}
-                    placeholder="jane@company.com"
-                    className="mt-1 w-full rounded border border-[#1B1A17] bg-[#F2EBDD] p-2 text-[#1B1A17] focus:border-[#D9432B] focus:outline-none dark:border-[#EBE3D3] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                    placeholder="lead@company.com"
+                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    Subject:
-                  </label>
+                  <label className="block text-[#14110F] font-medium text-[11px]">Subject:</label>
                   <input
                     type="text"
                     value={contactSubject}
                     onChange={(e) => setContactSubject(e.target.value)}
-                    placeholder="Engineering Role / Project Discussion"
-                    className="mt-1 w-full rounded border border-[#1B1A17] bg-[#F2EBDD] p-2 text-[#1B1A17] focus:border-[#D9432B] focus:outline-none dark:border-[#EBE3D3] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                    placeholder="Full Stack Opportunity / Technical Inscription"
+                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#1B1A17] dark:text-[#EBE3D3]">
-                    Transmission Message:
-                  </label>
+                  <label className="block text-[#14110F] font-medium text-[11px]">Message:</label>
                   <textarea
                     required
                     rows={4}
                     value={contactBody}
                     onChange={(e) => setContactBody(e.target.value)}
-                    placeholder="Tell me about the problem you're solving, your stack, or an opportunity..."
-                    className="mt-1 w-full rounded border border-[#1B1A17] bg-[#F2EBDD] p-2 text-[#1B1A17] focus:border-[#D9432B] focus:outline-none dark:border-[#EBE3D3] dark:bg-[#181512] dark:text-[#EBE3D3]"
+                    placeholder="Describe your project, team, or opportunity..."
+                    className="mt-1 w-full rounded border-hairline bg-[#F6F1E7] p-2 text-[#14110F] focus:border-[#B08D57] focus:outline-none"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={contactLoading}
-                  className="flex w-full items-center justify-center gap-2 rounded border border-[#1B1A17] bg-[#D9432B] py-3 font-bold uppercase tracking-wider text-white shadow-[2px_2px_0px_0px_#1B1A17] hover:opacity-90 disabled:opacity-50 dark:border-[#EBE3D3]"
+                  className="flex w-full items-center justify-center gap-2 rounded border border-[#6F665A]/30 bg-[#EDE5D3] py-2.5 font-mono text-xs uppercase tracking-wider text-[#14110F] hover:border-[#B08D57] disabled:opacity-50 transition-colors"
                 >
-                  <Send className="h-3.5 w-3.5" />
-                  <span>{contactLoading ? "Sending Transmission..." : "Send Transmission to Srajan"}</span>
+                  <Send className="h-3.5 w-3.5 text-[#B08D57]" />
+                  <span>{contactLoading ? "Transmitting..." : "Send Direct Transmission"}</span>
                 </button>
               </form>
 
-              {/* Direct coordinates list with SVG icons */}
-              <div className="mt-6 border-t border-[#D3C4A5] pt-4 font-mono text-xs dark:border-[#3A3328]">
-                <span className="block text-[11px] font-bold uppercase text-[#837B6D] dark:text-[#7E7565]">
-                  Direct Coordinates:
-                </span>
-                <div className="mt-2 space-y-1.5 text-[11px] text-[#4B463E] dark:text-[#B2A896]">
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-3.5 w-3.5 text-[#D9432B]" />
-                    <a href="mailto:srivasrajan8@gmail.com" className="hover:underline">
-                      srivasrajan8@gmail.com
-                    </a>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-3.5 w-3.5 text-[#7A8B6F]" />
-                    <span>+91 7007968745</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {/* LinkedIn SVG */}
-                    <svg className="h-3.5 w-3.5 text-[#C99A3B]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-                    </svg>
-                    <a
-                      href="https://linkedin.com/in/srajan-srivastava"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline"
-                    >
-                      linkedin.com/in/srajan-srivastava
-                    </a>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {/* GitHub SVG */}
-                    <svg className="h-3.5 w-3.5 text-[#1B1A17] dark:text-[#EBE3D3]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
-                    </svg>
-                    <a
-                      href="https://github.com/Srajan-21"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline"
-                    >
-                      github.com/Srajan-21
-                    </a>
-                  </div>
+              {/* Direct Coordinates */}
+              <div className="mt-8 border-t-hairline pt-4 font-mono text-[11px] text-[#6F665A] space-y-2">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-3 w-3 text-[#B08D57]" />
+                  <a href="mailto:srivasrajan8@gmail.com" className="hover:underline text-[#14110F]">
+                    srivasrajan8@gmail.com
+                  </a>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="h-3 w-3 text-[#B08D57]" />
+                  <span>+91 7007968745</span>
                 </div>
               </div>
             </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { soundEngine } from "@/lib/sound";
 import { Sparkles } from "lucide-react";
 
 export function SplashScreen({ onComplete }: { onComplete: () => void }) {
@@ -13,7 +12,6 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
     // 0.25s: Nib touches paper, calligraphic draw begins
     const t1 = setTimeout(() => {
       setStage("signing");
-      soundEngine.playPenScratch();
     }, 250);
 
     // 1.2s: Secondary phase text
@@ -24,7 +22,6 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
     // 2.0s: Signature completes, red seal stamp slams down
     const t3 = setTimeout(() => {
       setStage("stamped");
-      soundEngine.playStamp();
       setStatusText("FIELD LOG: BPIT DELHI TO HUDLE • READY");
     }, 2000);
 
@@ -53,7 +50,6 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
   const handleComplete = () => {
     if (fadingOut) return;
     setStage("unfurling");
-    soundEngine.playPaperTear();
     setFadingOut(true);
     setTimeout(() => {
       onComplete();

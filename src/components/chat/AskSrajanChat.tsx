@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { soundEngine } from "@/lib/sound";
-import { useJournal } from "@/context/JournalContext";
+import { useCollector } from "@/context/CollectorContext";
 import { MessageSquare, X, Send, Bot, Sparkles, Compass } from "lucide-react";
 
 interface ChatMessage {
@@ -13,7 +12,7 @@ interface ChatMessage {
 }
 
 export function AskSrajanChat() {
-  const { addXP } = useJournal();
+  const { unlockSeal } = useCollector();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,7 +20,7 @@ export function AskSrajanChat() {
     {
       id: "m-0",
       sender: "bot",
-      text: "Greetings, Player! I'm Srajan's field assistant. Ask me anything about his work at Hudle, the CLAVIS startup, Tourphin, his music at Octave, or how to get in touch.",
+      text: "Welcome to the Collector's Edition archive. You may inquire about Srajan's engineering work at Hudle, the CLAVIS startup, Tourphin, or his leadership at Octave BPIT.",
     },
   ]);
 
@@ -35,7 +34,6 @@ export function AskSrajanChat() {
     const textToSend = queryText || input;
     if (!textToSend.trim() || loading) return;
 
-    soundEngine.playClick();
     const userMsg: ChatMessage = {
       id: `u-${Date.now()}`,
       sender: "user",
@@ -54,8 +52,7 @@ export function AskSrajanChat() {
       });
 
       const data = await res.json();
-      soundEngine.playStamp();
-      addXP(20, "JOURNAL ARCHIVE QUERIED");
+      unlockSeal("seal_archivist");
 
       const botMsg: ChatMessage = {
         id: `b-${Date.now()}`,
@@ -100,7 +97,6 @@ export function AskSrajanChat() {
       <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => {
-            soundEngine.playClick();
             setIsOpen(!isOpen);
           }}
           data-cursor="pointer"
