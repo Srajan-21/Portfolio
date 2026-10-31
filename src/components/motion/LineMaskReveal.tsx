@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { lineMaskContainerVariants, lineMaskItemVariants, EASINGS, DURATIONS } from "@/lib/motion";
-import { useCollector } from "@/context/CollectorContext";
+import { useStickerWorld } from "@/context/StickerWorldContext";
 
 interface LineMaskRevealProps {
   lines?: string[];
@@ -24,9 +24,9 @@ export function LineMaskReveal({
   threshold = 0.2,
   as: Component = "div",
 }: LineMaskRevealProps) {
-  const { reduceMotion } = useCollector();
+  const { calmMode } = useStickerWorld();
 
-  if (reduceMotion) {
+  if (calmMode) {
     return (
       <Component className={className}>
         {lines ? (

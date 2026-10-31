@@ -9,6 +9,7 @@ export type Json =
 export interface TimelineEvent {
   id: string;
   level: number;
+  lane?: "code" | "music";
   title: string;
   subtitle: string | null;
   body_md: string;
@@ -35,6 +36,7 @@ export interface Project {
   level: number;
   sort_order: number;
   published: boolean;
+  status_badge?: string;
   created_at: string;
   updated_at: string;
 }
@@ -68,6 +70,30 @@ export interface Skill {
   sort_order: number;
 }
 
+export type CardRarity = "Common" | "Rare" | "Epic" | "Legendary";
+
+export interface TradingCard {
+  id: string;
+  title: string;
+  subtitle: string;
+  rarity: CardRarity;
+  category: "project" | "achievement" | "origin" | "secret";
+  description: string;
+  stats: Record<string, string | number>;
+  artwork_icon?: string;
+  artwork_url?: string | null;
+  flavor_text?: string;
+}
+
+export interface Quest {
+  id: string;
+  title: string;
+  description: string;
+  reward_stickers: number;
+  completed?: boolean;
+  isSecret?: boolean;
+}
+
 export interface SiteSettings {
   currently: {
     building: string;
@@ -84,6 +110,10 @@ export interface SiteSettings {
     filename: string;
     updated_at: string;
   };
+  team_links?: {
+    abhishek?: string;
+    swaraj?: string;
+  };
   contact_info: {
     email: string;
     phone: string;
@@ -98,7 +128,7 @@ export interface GuestbookEntry {
   id: string;
   name: string;
   message: string;
-  doodle_data: { points: Array<{ x: number; y: number; dragging?: boolean }> } | null;
+  doodle_data?: string | null;
   approved: boolean;
   ip_hash: string | null;
   created_at: string;
@@ -115,14 +145,20 @@ export interface ContactMessage {
   created_at: string;
 }
 
+export type StickerLevel = "Newbie" | "Rookie" | "Pro" | "Legend";
 export type CollectorRank = "Apprentice" | "Journeyman" | "Artisan" | "Master";
 
 export interface VisitorProgress {
   session_id: string;
-  progress_score: number;
-  seals_earned: string[];
-  rank: CollectorRank;
-  levels_unlocked: number[];
-  easter_eggs_found: string[];
+  stickers_count: number;
+  level: StickerLevel;
+  cards_unlocked: string[];
+  quests_completed: string[];
+  // Backwards compatibility fields:
+  progress_score?: number;
+  seals_earned?: string[];
+  rank?: CollectorRank;
+  levels_unlocked?: number[];
+  easter_eggs_found?: string[];
   updated_at: string;
 }

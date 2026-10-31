@@ -1,16 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CollectorProvider, useCollector } from "@/context/CollectorContext";
-import { PaperNoise } from "@/components/layout/PaperNoise";
-import { CustomCursor } from "@/components/ui/CustomCursor";
-import { CollectorTopBar } from "@/components/layout/CollectorTopBar";
-import { VerticalChapterIndex } from "@/components/layout/VerticalChapterIndex";
+import { StickerWorldProvider, useStickerWorld } from "@/context/StickerWorldContext";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
-import { TheCabinet } from "@/components/layout/TheCabinet";
-import { ChapterCurtainDivider } from "@/components/layout/ChapterCurtainDivider";
+import { StickerCursor } from "@/components/ui/StickerCursor";
+import { RetroTaskbar } from "@/components/layout/RetroTaskbar";
+import { PlayableMascot } from "@/components/mascot/PlayableMascot";
 import { SplashScreen } from "@/components/ui/SplashScreen";
-import { Level0TitleScreen } from "@/components/levels/Level0TitleScreen";
+import { HeroStickerWorld } from "@/components/hero/HeroStickerWorld";
+
+// Progressive chapter components (to be overhauled in P3-P6)
 import { Level1Origins } from "@/components/levels/Level1Origins";
 import { Level2TheGrind } from "@/components/levels/Level2TheGrind";
 import { Level3FirstBuild } from "@/components/levels/Level3FirstBuild";
@@ -21,14 +20,14 @@ import { Level7Inventory } from "@/components/levels/Level7Inventory";
 import { Level8Player2 } from "@/components/levels/Level8Player2";
 import { AskSrajanChat } from "@/components/chat/AskSrajanChat";
 
-function CollectorContainer() {
-  const { activeChapter, setActiveChapter, unlockSeal, activeToast } = useCollector();
+function StickerWorldContainer() {
+  const { setActiveChapter, completeQuest } = useStickerWorld();
   const [showSplash, setShowSplash] = useState<boolean>(true);
 
   // Check if splash was already viewed in this browser session
   useEffect(() => {
     try {
-      const seen = sessionStorage.getItem("srajan_collector_splash_seen");
+      const seen = sessionStorage.getItem("srajan_sticker_splash_seen");
       if (seen === "true") {
         setShowSplash(false);
       }
@@ -38,15 +37,15 @@ function CollectorContainer() {
   const handleSplashComplete = () => {
     setShowSplash(false);
     try {
-      sessionStorage.setItem("srajan_collector_splash_seen", "true");
+      sessionStorage.setItem("srajan_sticker_splash_seen", "true");
     } catch {}
   };
 
-  // Scroll spy to update active chapter numeral in top bar and vertical index
+  // Scroll spy to update active chapter
   useEffect(() => {
     const handleScroll = () => {
       const chapters = [
-        "chapter-0",
+        "hero-section",
         "chapter-1",
         "chapter-2",
         "chapter-3",
@@ -73,7 +72,7 @@ function CollectorContainer() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [setActiveChapter]);
 
-  // Secret Seal: Konami Code listener
+  // Secret: Konami Code listener (completes quest q_konami)
   useEffect(() => {
     const konamiSequence = [
       "ArrowUp",
@@ -93,7 +92,7 @@ function CollectorContainer() {
       if (e.key === konamiSequence[currentIndex]) {
         currentIndex++;
         if (currentIndex === konamiSequence.length) {
-          unlockSeal("seal_konami");
+          completeQuest("q_konami");
           currentIndex = 0;
         }
       } else {
@@ -103,83 +102,48 @@ function CollectorContainer() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [unlockSeal]);
+  }, [completeQuest]);
 
   return (
     <SmoothScroll>
-      <div className="relative min-h-screen bg-[#F6F1E7] text-[#14110F] selection:bg-[#6B1E1E] selection:text-[#F6F1E7]">
+      <div className="relative min-h-screen bg-[#FFF8EC] text-[#14121A] selection:bg-[#FFC93C] selection:text-[#14121A] pb-24">
         {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-        <PaperNoise />
-        <CustomCursor />
-        <CollectorTopBar />
-        <VerticalChapterIndex />
-        <TheCabinet />
+        
+        {/* Playable Mascot & Custom Sticker Cursor */}
+        <StickerCursor />
+        <PlayableMascot />
+        <RetroTaskbar />
 
-        {/* Gentle Seal Earned Toast */}
-        {activeToast && (
-          <div className="fixed bottom-8 right-8 z-50 animate-fade-in">
-            <div className="flex items-center gap-3 rounded border border-[#B08D57]/40 bg-[#FAF7F2] p-4 shadow-plinth">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#B08D57] bg-[#EDE5D3] text-[#8C6B3A] font-display font-semibold text-sm">
-                {activeToast.numeral}
-              </div>
-              <div>
-                <span className="block font-mono text-[9px] uppercase tracking-[0.2em] text-[#8C6B3A]">
-                  SEAL CONFERRED
-                </span>
-                <span className="font-display text-base font-light text-[#14110F]">
-                  {activeToast.title}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <main className="relative z-10 mx-auto w-full lg:pl-16">
-          {/* FRONTISPIECE / CHAPTER 0 */}
-          <Level0TitleScreen />
-
-          <ChapterCurtainDivider numeral="I" label="ORIGINS & BPIT MATRICULATION" />
+        <main className="relative z-10 mx-auto w-full">
+          {/* LEVEL 0: HERO STICKER WORLD & PHYSICS DESK */}
+          <HeroStickerWorld />
 
           {/* CHAPTER I: ORIGINS (2022) */}
           <Level1Origins />
 
-          <ChapterCurtainDivider numeral="II" label="THE GRIND & RESILIENCE" />
-
           {/* CHAPTER II: THE GRIND */}
           <Level2TheGrind />
 
-          <ChapterCurtainDivider numeral="III" label="TOURPHIN & FIRST ARCHITECTURE" />
-
-          {/* CHAPTER III: FIRST BUILD &bull; TOURPHIN */}
+          {/* CHAPTER III: FIRST BUILD • TOURPHIN */}
           <Level3FirstBuild />
 
-          <ChapterCurtainDivider numeral="IV" label="THE PODIUM & CRACK-A-CODE 3.0" />
-
-          {/* CHAPTER IV: THE PODIUM &bull; CRACK-A-CODE 3.0 */}
+          {/* CHAPTER IV: THE PODIUM • CRACK-A-CODE 3.0 */}
           <Level4BossFight />
 
-          <ChapterCurtainDivider numeral="V" label="CLAVIS & STARTUP MAGNUM OPUS" />
-
-          {/* CHAPTER V: CLAVIS &bull; THE STARTUP MAGNUM OPUS */}
+          {/* CHAPTER V: CLAVIS • THE STARTUP MAGNUM OPUS */}
           <Level5Clavis />
 
-          <ChapterCurtainDivider numeral="VI" label="THE REAL WORLD & HUDLE TELEMETRY" />
-
-          {/* CHAPTER VI: THE REAL WORLD &bull; HUDLE */}
+          {/* CHAPTER VI: THE REAL WORLD • HUDLE */}
           <Level6RealWorld />
-
-          <ChapterCurtainDivider numeral="VII" label="THE TOOLKIT & CATALOGUE" />
 
           {/* CHAPTER VII: THE TOOLKIT */}
           <Level7Inventory />
 
-          <ChapterCurtainDivider numeral="VIII" label="THE LAST PAGE & CERTIFICATE" />
-
-          {/* CHAPTER VIII: THE LAST PAGE &bull; CERTIFICATE OF PASSAGE */}
+          {/* CHAPTER VIII: THE LAST PAGE • GUESTBOOK & CONTACT */}
           <Level8Player2 />
         </main>
 
-        {/* Archival Assistant */}
+        {/* AI Chat Bot Assistant */}
         <AskSrajanChat />
       </div>
     </SmoothScroll>
@@ -188,8 +152,8 @@ function CollectorContainer() {
 
 export default function Home() {
   return (
-    <CollectorProvider>
-      <CollectorContainer />
-    </CollectorProvider>
+    <StickerWorldProvider>
+      <StickerWorldContainer />
+    </StickerWorldProvider>
   );
 }

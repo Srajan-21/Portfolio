@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { clipPathRevealVariants } from "@/lib/motion";
-import { useCollector } from "@/context/CollectorContext";
+import { useStickerWorld } from "@/context/StickerWorldContext";
 
 interface ClipPathRevealProps {
   children: React.ReactNode;
@@ -18,9 +18,9 @@ export function ClipPathReveal({
   delay = 0,
   threshold = 0.2,
 }: ClipPathRevealProps) {
-  const { reduceMotion } = useCollector();
+  const { calmMode } = useStickerWorld();
 
-  if (reduceMotion) {
+  if (calmMode) {
     return <div className={className}>{children}</div>;
   }
 

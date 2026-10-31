@@ -1,41 +1,39 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Newsreader, JetBrains_Mono, Caveat } from "next/font/google";
+import { Bricolage_Grotesque, DM_Sans, Space_Mono, Caveat } from "next/font/google";
 import "./globals.css";
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const bricolage = Bricolage_Grotesque({
+  variable: "--font-bricolage",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
+  weight: ["400", "600", "700", "800"],
   display: "swap",
 });
 
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
+const dmSans = DM_Sans({
+  variable: "--font-dmsans",
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  style: ["normal", "italic"],
+  weight: ["400", "500", "700"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
+const spaceMono = Space_Mono({
+  variable: "--font-spacemono",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "700"],
   display: "swap",
 });
 
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
-  weight: ["400", "600"],
+  weight: ["500", "700"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Srajan Srivastava — The Collector's Edition",
+  title: "Srajan Srivastava — Sticker-Bomb World & Portfolio",
   description:
-    "An editorial archive charting the software engineering journey of Srajan Srivastava — from BPIT Delhi (2022) to the CLAVIS startup and production at Hudle.",
+    "Software Developer, Guitarist, Ex-President of Octave, and Builder of CLAVIS & Tourphin. An interactive sticker-bomb adventure from BPIT Delhi (2022) to Hudle.",
   keywords: [
     "Srajan Srivastava",
     "Software Developer",
@@ -45,69 +43,38 @@ export const metadata: Metadata = {
     "Supabase",
     "New Delhi",
     "CLAVIS",
+    "Tourphin",
     "Hudle",
   ],
   authors: [{ name: "Srajan Srivastava", url: "https://github.com/Srajan-21" }],
+  creator: "Srajan Srivastava",
   openGraph: {
-    title: "Srajan Srivastava — The Collector's Edition",
-    description:
-      "Editorial monograph of a software developer: BPIT Delhi, Octave Music President, Tourphin, CLAVIS startup, and production at Hudle.",
-    url: "https://srajansrivastava.com",
-    siteName: "Srajan Srivastava Monograph",
-    locale: "en_US",
     type: "website",
+    locale: "en_US",
+    url: "https://srajansrivastava.dev",
+    siteName: "Srajan Srivastava Portfolio",
+    title: "Srajan Srivastava — Sticker-Bomb World",
+    description:
+      "Travel through Srajan's journey from day one at BPIT Delhi to production at Hudle. Full of stickers, retro OS windows, and trading cards.",
   },
-};
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: "Srajan Srivastava",
-  jobTitle: "Software Developer",
-  url: "https://srajansrivastava.com",
-  sameAs: [
-    "https://github.com/Srajan-21",
-    "https://linkedin.com/in/srajan-srivastava",
-    "https://leetcode.com/u/SRAJAN 9839",
-  ],
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "New Delhi",
-    addressCountry: "India",
+  twitter: {
+    card: "summary_large_image",
+    title: "Srajan Srivastava — Sticker-Bomb World",
+    description: "Software Developer. Guitarist. Ex-President of Octave. Currently debugging payments at Hudle.",
   },
-  alumniOf: {
-    "@type": "EducationalOrganization",
-    name: "Bhagwan Parshuram Institute of Technology (BPIT Delhi)",
-  },
-  knowsAbout: [
-    "Full Stack Engineering",
-    "Next.js",
-    "TypeScript",
-    "PostgreSQL",
-    "Supabase",
-    "Data Structures & Algorithms",
-    "Payment Webhook Idempotency",
-    "System Architecture",
-  ],
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${newsreader.variable} ${jetbrainsMono.variable} ${caveat.variable} h-full antialiased`}
+      className={`${bricolage.variable} ${dmSans.variable} ${spaceMono.variable} ${caveat.variable}`}
     >
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
-      <body className="min-h-full flex flex-col bg-[#F6F1E7] text-[#14110F] font-serif selection:bg-[#6B1E1E] selection:text-[#F6F1E7]">
+      <body className="min-h-screen bg-[#FFF8EC] font-sans text-[#14121A] antialiased bg-dot-grid">
         {children}
       </body>
     </html>

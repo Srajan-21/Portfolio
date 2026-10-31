@@ -18,3 +18,4 @@ WHERE progress_score = 0 AND xp IS NOT NULL;
 ALTER TABLE visitor_progress ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Public upsert progress" ON visitor_progress;
 CREATE POLICY "Public upsert progress" ON visitor_progress FOR ALL USING (true) WITH CHECK (true);
+

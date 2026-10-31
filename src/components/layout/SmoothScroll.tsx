@@ -2,15 +2,19 @@
 
 import React, { useEffect, useRef } from "react";
 import Lenis from "lenis";
-import { useCollector } from "@/context/CollectorContext";
+import { useStickerWorld } from "@/context/StickerWorldContext";
 
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
-  const { reduceMotion, readerMode } = useCollector();
+  const { calmMode } = useStickerWorld();
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    // If reduced motion is requested or reader mode is active, do not engage smooth scroll
-    if (reduceMotion || readerMode) {
+    // If calm mode is active or user prefers reduced motion, do not engage smooth scroll
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (calmMode || prefersReduced) {
       if (lenisRef.current) {
         lenisRef.current.destroy();
         lenisRef.current = null;
@@ -20,7 +24,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     }
 
     const lenis = new Lenis({
-      duration: 1.15,
+      duration: 1.1,
       lerp: 0.08,
       orientation: "vertical",
       gestureOrientation: "vertical",
@@ -45,7 +49,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       lenisRef.current = null;
       document.documentElement.classList.remove("lenis", "lenis-smooth");
     };
-  }, [reduceMotion, readerMode]);
+  }, [calmMode]);
 
   return <>{children}</>;
 }

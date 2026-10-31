@@ -16,28 +16,24 @@ export function ChapterCurtainDivider({
   return (
     <div
       aria-hidden="true"
-      className={`relative my-12 flex items-center justify-center px-8 sm:px-16 ${className}`}
+      className={`relative my-14 flex items-center justify-center px-6 sm:px-12 select-none ${className}`}
     >
-      {/* Left Hairline Rule */}
-      <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-[#6F665A]/25 to-[#B08D57]/40" />
+      {/* Dashed line */}
+      <div className="h-[3px] flex-1 border-t-2 border-dashed border-[#14121A]/30" />
 
-      {/* Center Archival Emblem */}
-      <div className="mx-6 flex items-center gap-3">
-        <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#6F665A]/70">
-          CH.
+      {/* Colorful Sticker Badge */}
+      <div className="mx-4 flex items-center gap-2 rounded-xl border-ink-2 bg-[#FFC93C] px-3.5 py-1.5 shadow-hard-sm rotate-[-1deg]">
+        <span className="font-mono text-xs font-black uppercase text-[#14121A]">
+          CH. {numeral}
         </span>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#B08D57]/40 bg-[#EDE5D3]/60 font-display font-semibold italic text-xs text-[#8C6B3A]">
-          {numeral}
-        </div>
         {label && (
-          <span className="hidden sm:inline font-mono text-[9px] uppercase tracking-[0.25em] text-[#6F665A]/70">
-            {label}
+          <span className="hidden sm:inline font-mono text-[10px] font-bold uppercase text-[#14121A]/80">
+            &bull; {label}
           </span>
         )}
       </div>
 
-      {/* Right Hairline Rule */}
-      <div className="h-[1px] flex-1 bg-gradient-to-r from-[#B08D57]/40 via-[#6F665A]/25 to-transparent" />
+      <div className="h-[3px] flex-1 border-t-2 border-dashed border-[#14121A]/30" />
     </div>
   );
 }
