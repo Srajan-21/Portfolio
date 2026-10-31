@@ -127,3 +127,4 @@ export function InkDoodleCanvas({ onDoodleChange }: InkDoodleCanvasProps) {
     </div>
   );
 }
+

@@ -122,3 +122,4 @@ export interface VisitorProgress {
   easter_eggs_found: string[];
   updated_at: string;
 }
+

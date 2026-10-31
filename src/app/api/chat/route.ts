@@ -106,3 +106,4 @@ Answer directly in first-person as Srajan's journal assistant in 2-3 sentences. 
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
+

@@ -46,3 +46,4 @@ test("Satiety meal prediction formula prevents zero or negative values", () => {
   const portion2 = calculatePortion(8, "light");
   assert.ok(portion2 > portion1);
 });
+

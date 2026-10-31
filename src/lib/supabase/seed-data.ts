@@ -341,3 +341,4 @@ export const SEED_SETTINGS: SiteSettings = {
     location: "New Delhi, India",
   },
 };
+

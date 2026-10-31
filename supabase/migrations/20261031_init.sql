@@ -192,3 +192,4 @@ CREATE POLICY "Admin full contact" ON contact_messages FOR ALL TO authenticated 
 CREATE POLICY "Admin full analytics" ON analytics_events FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin full stats" ON stats_cache FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin full chat" ON chat_messages FOR ALL TO authenticated USING (true) WITH CHECK (true);
+

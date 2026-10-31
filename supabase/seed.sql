@@ -229,3 +229,4 @@ VALUES
   '{"email": "srivasrajan8@gmail.com", "phone": "+91 7007968745", "github": "https://github.com/Srajan-21", "linkedin": "https://linkedin.com/in/srajan-srivastava", "leetcode": "https://leetcode.com/u/SRAJAN 9839", "location": "New Delhi, India"}'::jsonb
 )
 ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW();
+

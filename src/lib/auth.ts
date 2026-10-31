@@ -23,3 +23,4 @@ export async function checkIsAdmin(): Promise<{ isAdmin: boolean; email?: string
     return { isAdmin: false };
   }
 }
+
