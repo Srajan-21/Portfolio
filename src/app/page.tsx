@@ -5,8 +5,12 @@ import { JournalProvider, useJournal } from "@/context/JournalContext";
 import { PaperNoise } from "@/components/layout/PaperNoise";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { HUD } from "@/components/layout/HUD";
-import { Level0TitleScreen } from "@/components/levels/Level0TitleScreen";
 import { SplashScreen } from "@/components/ui/SplashScreen";
+import { Level0TitleScreen } from "@/components/levels/Level0TitleScreen";
+import { Level1Origins } from "@/components/levels/Level1Origins";
+import { Level2TheGrind } from "@/components/levels/Level2TheGrind";
+import { Level3FirstBuild } from "@/components/levels/Level3FirstBuild";
+import { Level4BossFight } from "@/components/levels/Level4BossFight";
 
 function JournalContainer() {
   const { currentLevel, setLevel, unlockEasterEgg } = useJournal();
@@ -103,27 +107,33 @@ function JournalContainer() {
         {/* LEVEL 0: TITLE SCREEN */}
         <Level0TitleScreen />
 
-        {/* Phase 1 Preview Placeholder for Next Levels */}
+        {/* LEVEL 1: ORIGINS (2022) — BPIT Delhi & Octave Music Society */}
+        <Level1Origins />
+
+        {/* LEVEL 2: THE GRIND — LeetCode, Rejection & Algorithmic Resilience */}
+        <Level2TheGrind />
+
+        {/* LEVEL 3: FIRST BUILD — Tourphin Travel Engine (React, Supabase, Razorpay) */}
+        <Level3FirstBuild />
+
+        {/* LEVEL 4: BOSS FIGHT — Crack-a-Code 3.0 Hackathon Victory (3rd Place) */}
+        <Level4BossFight />
+
+        {/* Phase 4 Preview Placeholder */}
         <section
-          id="level-1"
-          className="relative min-h-[50vh] w-full border-b border-dashed border-[#D3C4A5] bg-[#FBF8F1] py-16 px-6 dark:border-[#3A3328] dark:bg-[#1B1814]"
+          id="level-5"
+          className="relative min-h-[40vh] w-full border-b border-dashed border-[#D3C4A5] bg-[#FBF8F1] py-16 px-6 dark:border-[#3A3328] dark:bg-[#1B1814]"
         >
           <div className="mx-auto max-w-4xl text-center">
             <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#D9432B] dark:text-[#E55840]">
-              [LEVEL 01 // COMING UP IN PHASE 3]
+              [LEVEL 05 // COMING UP IN PHASE 4]
             </span>
             <h2 className="mt-3 font-display text-3xl font-black uppercase text-[#1B1A17] sm:text-5xl dark:text-[#EBE3D3]">
-              LEVEL 1: ORIGINS (2022)
+              LEVEL 5: THE MAGNUM OPUS &bull; CLAVIS
             </h2>
             <p className="mx-auto mt-4 max-w-xl font-serif text-base italic text-[#4B463E] dark:text-[#B2A896]">
-              &ldquo;BPIT Delhi, B.Tech IT, day one. Self-drawing sketches and
-              the first sparks of code.&rdquo;
+              &ldquo;Intelligent Job Portal &amp; ATS Platform. 6 interactive subsystems: Multi-key LLM Gateway, sub-5ms Zero-LLM ATS scoring engine, concurrent ETL pipeline, and ARIA typewriter.&rdquo;
             </p>
-            <div className="mt-6 inline-flex items-center gap-2 rounded border border-dashed border-[#837B6D] px-4 py-2 font-mono text-xs text-[#837B6D] dark:text-[#7E7565]">
-              <span>Phase 1 Design Foundation Initialized</span>
-              <span>&bull;</span>
-              <span className="text-[#7A8B6F] font-bold dark:text-[#92A585]">Ready for Phase 2 Schema & Seed</span>
-            </div>
           </div>
         </section>
       </main>
